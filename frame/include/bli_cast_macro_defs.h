@@ -36,7 +36,7 @@
 #ifndef BLIS_CAST_MACRO_DEFS_H
 #define BLIS_CAST_MACRO_DEFS_H
 
-// -- Typecast { bfloat16 | float | double } to bfloat16 -----------------------
+// -- Typecast { bfloat16 | float | half | double } to bfloat16 -----------------------
 
 #ifdef BFLOAT
 BLIS_INLINE bfloat bli_bbcast( bfloat b )
@@ -61,6 +61,13 @@ BLIS_INLINE bfloat bli_sbcast( float s )
 #endif
 
 #ifdef BFLOAT
+BLIS_INLINE bfloat bli_hbcast( _Float16 h )
+{
+	return bli_sbcast((float)h);
+}
+#endif
+
+#ifdef BFLOAT
 BLIS_INLINE bfloat bli_dbcast( double d )
 {
 	bfloat b;
@@ -78,7 +85,38 @@ BLIS_INLINE bfloat bli_dbcast( double d )
 }
 #endif
 
-// -- Typecast { bfloat16 | float | double | int } to float --------------------------
+// -- Typecast { bfloat16 | half | float | double | int } to half -------------------------
+
+#ifdef BFLOAT
+BLIS_INLINE double bli_bhcast( bfloat b )
+{
+	float s = bli_bscast(b)
+
+	return ( _Float16 )s;
+}
+#endif
+
+BLIS_INLINE _Float16 bli_hhcast( _Float16 h )
+{
+	return h;
+}
+
+BLIS_INLINE _Float16 bli_shcast( float s )
+{
+	return ( _Float16 )s;
+}
+
+BLIS_INLINE _Float16 bli_dhcast( double d )
+{
+	return ( _Float16 )d;
+}
+
+BLIS_INLINE _Float16 bli_ihcast( dim_t i )
+{
+	return ( _Float16 )i;
+}
+
+// -- Typecast { bfloat16 | half | float | double | int } to float --------------------------
 
 #ifdef BFLOAT
 BLIS_INLINE float bli_bscast( bfloat b )
@@ -96,6 +134,11 @@ BLIS_INLINE float bli_bscast( bfloat b )
 }
 #endif
 
+BLIS_INLINE float bli_hscast( _Float16 h )
+{
+	return (float)h;
+}
+
 BLIS_INLINE float bli_sscast( float s )
 {
 	return s;
@@ -111,7 +154,7 @@ BLIS_INLINE float bli_iscast( dim_t i )
 	return ( float )i;
 }
 
-// -- Typecast { bfloat16 | float | double | int } to double -------------------------
+// -- Typecast { bfloat16 | half | float | double | int } to double -------------------------
 
 #ifdef BFLOAT
 BLIS_INLINE double bli_bdcast( bfloat b )
@@ -128,6 +171,11 @@ BLIS_INLINE double bli_bdcast( bfloat b )
 	return ( double )s;
 }
 #endif
+
+BLIS_INLINE double bli_hdcast( _Float16 h )
+{
+	return (double)h;
+}
 
 BLIS_INLINE double bli_sdcast( float s )
 {
@@ -148,7 +196,13 @@ BLIS_INLINE double bli_idcast( dim_t i )
 	return ( double )i;
 }
 
-// -- Typecast { float | double | int } to int -------------------------
+// -- Typecast { float | half | double | int } to int -------------------------
+
+BLIS_INLINE dim_t bli_hicast( _Float16 h )
+{
+	return ( dim_t )h;
+}
+
 
 BLIS_INLINE dim_t bli_sicast( float s )
 {
@@ -190,31 +244,46 @@ BLIS_INLINE PASTEMAC(cho,ctype) PASTEMAC2(chi,imag,cho)( PASTEMAC(chi,ctype) a )
 	return PASTEMAC2(chi,cho,cast)( PASTEMAC(chi,imag)( a ) ); \
 }
 
-// NOTE: We only have to generate functions that output to types [bsd] because
+// NOTE: We only have to generate functions that output to types [bhsd] because
 // these macros only need to output real types. The composition that allows
 // complex types will be handled by the consumers to these bli_?[real|imag]?()
 // functions.
 
-// [bsdkcz][bsd]
+// [bhsdkycz][bhsd]
 
 GENTFUNC( b, b )
+GENTFUNC( h, b )
 GENTFUNC( s, b )
 GENTFUNC( d, b )
 GENTFUNC( k, b )
+GENTFUNC( y, b )
 GENTFUNC( c, b )
 GENTFUNC( z, b )
 
+GENTFUNC( b, h )
+GENTFUNC( h, h )
+GENTFUNC( s, h )
+GENTFUNC( d, h )
+GENTFUNC( k, h )
+GENTFUNC( y, h ) 
+GENTFUNC( c, h )
+GENTFUNC( z, h )
+
 GENTFUNC( b, s )
+GENTFUNC( h, s )
 GENTFUNC( s, s )
 GENTFUNC( d, s )
 GENTFUNC( k, s )
+GENTFUNC( y, s )
 GENTFUNC( c, s )
 GENTFUNC( z, s )
 
 GENTFUNC( b, d )
+GENTFUNC( h, d )
 GENTFUNC( s, d )
 GENTFUNC( d, d )
 GENTFUNC( k, d )
+GENTFUNC( y, d )
 GENTFUNC( c, d )
 GENTFUNC( z, d )
 #endif
@@ -222,32 +291,49 @@ GENTFUNC( z, d )
 // bli_xytcast() macros are only used in the definitions of level0 scalar
 // macros. There, we use a different name from the actual cast functions--
 // which are named using the format bli_xycast()--so that we can optionally
-// replace them as part of the optimization below without distrubing any
+// replace them as part of the optimization below without disturbing any
 // other uses of bli_xycast() that should not be changed.
 
 #define bli_bbtcast  bli_bbcast
+#define bli_hbtcast  bli_hbcast
 #define bli_sbtcast  bli_sbcast
 #define bli_dbtcast  bli_dbcast
 #define bli_kbtcast  bli_kbcast
+#define bli_ybtcast  bli_ybcast
 #define bli_cbtcast  bli_cbcast
 #define bli_zbtcast  bli_zbcast
 
+#define bli_bhtcast  bli_bhcast
+#define bli_hhtcast  bli_hhcast
+#define bli_shtcast  bli_shcast
+#define bli_dhtcast  bli_dhcast
+#define bli_khtcast  bli_khcast
+#define bli_yhtcast  bli_yhcast
+#define bli_chtcast  bli_chcast
+#define bli_zhtcast  bli_zhcast
+#define bli_ihtcast  bli_ihcast
+
 #define bli_bstcast  bli_bscast
+#define bli_hstcast  bli_hscast
 #define bli_sstcast  bli_sscast
 #define bli_dstcast  bli_dscast
 #define bli_kstcast  bli_kscast
+#define bli_ystcast  bli_yscast
 #define bli_cstcast  bli_cscast
 #define bli_zstcast  bli_zscast
 #define bli_istcast  bli_iscast
 
 #define bli_bdtcast  bli_bdcast
+#define bli_hdtcast  bli_hdcast
 #define bli_sdtcast  bli_sdcast
 #define bli_ddtcast  bli_ddcast
 #define bli_kdtcast  bli_kdcast
+#define bli_ydtcast  bli_ydcast
 #define bli_cdtcast  bli_cdcast
 #define bli_zdtcast  bli_zdcast
 #define bli_idtcast  bli_idcast
 
+#define bli_hitcast  bli_hicast
 #define bli_sitcast  bli_sicast
 #define bli_ditcast  bli_dicast
 #define bli_iitcast  bli_iicast
@@ -270,12 +356,16 @@ GENTFUNC( z, d )
 
 #undef  bli_bbcast
 #define bli_bbcast  bli_bscast
+#undef  bli_hbcast
+#define bli_hbcast  bli_hscast
 #undef  bli_sbcast
 #define bli_sbcast  bli_sscast
 #undef  bli_dbcast
 #define bli_dbcast  bli_dscast
 #undef  bli_kbcast
 #define bli_kbcast  bli_kscast
+#undef  bli_ybcast
+#define bli_ybcast  bli_yscast
 #undef  bli_cbcast
 #define bli_cbcast  bli_cscast
 #undef  bli_zbcast
@@ -303,6 +393,12 @@ GENTFUNC( z, d )
 #define bli_bmtwo   bli_sbcast( bli_smtwo )
 
 #endif
+
+#define bli_htwo    2.0f16
+#define bli_hone    1.0f16
+#define bli_hzero   0.0f16
+#define bli_hmone  -1.0f16
+#define bli_hmtwo  -2.0f16
 
 #define bli_stwo    2.0F
 #define bli_sone    1.0F
@@ -340,6 +436,14 @@ GENTFUNC( z, d )
 
 #endif
 
+#define bli_hmul( a, b )       (a) * (b)
+#define bli_hdiv( a, b )       (a) / (b)
+#define bli_hadd( a, b )       (a) + (b)
+#define bli_hsub( a, b )       (a) - (b)
+#define bli_hneg( a )          -(a)
+#define bli_hsqrt( a )         (_Float16) sqrtf( (float) a )
+#define bli_hhypot( a, b )     (_Float16) hypotf( (float) a, (float) b)
+
 #define bli_smul( a, b )       (a) * (b)
 #define bli_sdiv( a, b )       (a) / (b)
 #define bli_sadd( a, b )       (a) + (b)
@@ -375,6 +479,12 @@ GENTFUNC( z, d )
 #define bli_bge( a, b )      bli_sbcast( bli_sge( bli_bscast(a), bli_bscast(b) ) )
 
 #endif
+
+#define bli_heq( a, b )  ( a == b )
+#define bli_hlt( a, b )  ( a <  b )
+#define bli_hle( a, b )  ( a <= b )
+#define bli_hgt( a, b )  ( a >  b )
+#define bli_hge( a, b )  ( a >= b )
 
 #define bli_seq( a, b )  ( a == b )
 #define bli_slt( a, b )  ( a <  b )
@@ -420,6 +530,14 @@ GENTFUNC( z, d )
 
 #endif
 
+#define bli_hmin( a, b )       ( bli_hlt( a, b ) ? a : b )
+#define bli_hmax( a, b )       ( bli_hgt( a, b ) ? a : b )
+//#define bli_habs( a )          ( bli_slt( a, PASTEMAC(s,zero) ) ? -(a) : a )
+#define bli_habs( a )          ( (_Float16) fabsf( (float) a ) )
+#define bli_hminabs( a, b )    bli_hmin( bli_habs( a ), bli_habs( b ) )
+#define bli_hmaxabs( a, b )    bli_hmax( bli_habs( a ), bli_habs( b ) )
+#define bli_hcopysign( a, b )  ( (_Float16) copysignf( (float) a, (float) b ) ) \
+
 #define bli_smin( a, b )       ( bli_slt( a, b ) ? a : b )
 #define bli_smax( a, b )       ( bli_sgt( a, b ) ? a : b )
 //#define bli_sabs( a )          ( bli_slt( a, PASTEMAC(s,zero) ) ? -(a) : a )
@@ -450,6 +568,9 @@ GENTFUNC( z, d )
 
 #endif
 
+#define bli_hisinf( a )        isinf( a )
+#define bli_hisnan( a )        isnan( a )
+
 #define bli_sisinf( a )        isinf( a )
 #define bli_sisnan( a )        isnan( a )
 
@@ -459,6 +580,7 @@ GENTFUNC( z, d )
 // -- Randomization operations (per precision) ---------------------------------
 
 #define bli_brand              bli_dbcast( bli_rand() )
+#define bli_hrand              bli_dhcast( bli_rand() )
 #define bli_srand              bli_dscast( bli_rand() )
 #define bli_drand              bli_ddcast( bli_rand() )
 
@@ -471,6 +593,7 @@ BLIS_INLINE double bli_rand( void )
 }
 
 #define bli_brandnp2           bli_dbcast( bli_randnp2s() )
+#define bli_hrandnp2           bli_dhcast( bli_randnp2s() )
 #define bli_srandnp2           bli_dscast( bli_randnp2s() )
 #define bli_drandnp2           bli_ddcast( bli_randnp2s() )
 

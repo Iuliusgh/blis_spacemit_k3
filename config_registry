@@ -65,5 +65,8 @@ rv64iv:      rv64iv/rviv
 sifive_rvv: sifive_rvv
 sifive_x280: sifive_x280/sifive_rvv
 
+# SpacemiT architectures.
+spacemit_k3: spacemit_k3/spacemit_k3
+
 # Generic architectures.
 generic:     generic

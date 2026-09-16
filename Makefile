@@ -91,6 +91,8 @@ COMMON_MK_FILE    := common.mk
 # Include the configuration file.
 -include $(COMMON_MK_FILE)
 
+#LDFLAGS += -rdynamic -ldl
+
 # Detect whether we actually got the configuration file. If we didn't, then
 # it is likely that the user has not yet generated it (via configure).
 ifeq ($(strip $(COMMON_MK_INCLUDED)),yes)
@@ -446,7 +448,7 @@ MK_TESTSUITE_OBJS       := $(sort \
                                       $(BASE_OBJ_TESTSUITE_PATH)/%.o, \
                                       $(wildcard $(TESTSUITE_SRC_PATH)/*.c)) \
                             )
-
+#TRACE_OBJ               := $(BASE_OBJ_TESTSUITE_PATH)/trace.o
 # The test suite binary executable filename.
 # NOTE: The TESTSUITE_WRAPPER variable defaults to the empty string if it
 # is not already set, in which case it has no effect lateron when the
@@ -966,14 +968,17 @@ else
 	@echo "Compiling $@"
 	@$(CC) $(call get-user-cflags-for,$(CONFIG_NAME)) -c $< -o $@
 endif
-
+# Trace shim — built without -finstrument-functions, deliberately.
+#$(TRACE_OBJ): trace.c
+#	@mkdir -p $(BASE_OBJ_TESTSUITE_PATH)
+#	$(CC) -c $< -o $@
 # Testsuite binary rule.
 $(TESTSUITE_BIN): $(MK_TESTSUITE_OBJS) $(LIBBLIS_LINK)
 ifeq ($(ENABLE_VERBOSE),yes)
-	$(LINKER) $(MK_TESTSUITE_OBJS) $(LIBBLIS_LINK) $(LDFLAGS) -o $@
+	$(LINKER) $(MK_TESTSUITE_OBJS) $(TRACE_OBJ) $(LIBBLIS_LINK) $(LDFLAGS) -o $@
 else
 	@echo "Linking $@ against '$(LIBBLIS_LINK) "$(LDFLAGS)"'"
-	@$(LINKER) $(MK_TESTSUITE_OBJS) $(LIBBLIS_LINK) $(LDFLAGS) -o $@
+#    @$(LINKER) $(MK_TESTSUITE_OBJS) $(TRACE_OBJ) $(LIBBLIS_LINK) $(LDFLAGS) -o $@
 endif
 
 # Template rule for running the testsuite with given input files.

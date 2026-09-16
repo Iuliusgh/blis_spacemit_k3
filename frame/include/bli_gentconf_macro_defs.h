@@ -233,6 +233,14 @@
 #define INSERT_GENTCONF_SIFIVE_X280
 #endif
 
+// -- SpacemiT architectures ----------------------------------------------------
+
+#ifdef BLIS_CONFIG_SPACEMIT_K3
+#define INSERT_GENTCONF_SPACEMIT_K3 GENTCONF( SPACEMIT_K3, spacemit_k3 )
+#else
+#define INSERT_GENTCONF_SPACEMIT_K3
+#endif
+
 // -- Generic architectures ----------------------------------------------------
 
 #ifdef BLIS_CONFIG_GENERIC
@@ -287,6 +295,8 @@ INSERT_GENTCONF_RV64IV \
 \
 INSERT_GENTCONF_SIFIVE_RVV \
 INSERT_GENTCONF_SIFIVE_X280 \
+\
+INSERT_GENTCONF_SPACEMIT_K3 \
 \
 INSERT_GENTCONF_GENERIC
 

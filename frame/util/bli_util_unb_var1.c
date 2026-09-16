@@ -280,6 +280,7 @@ INSERT_GENTFUNCR_BASIC( norm1v_unb_var1 )
 // correct if same-size non-float types are ever added.
 #define s_IS_FLOAT 1
 #define d_IS_FLOAT 0
+#define h_IS_FLOAT 0
 #ifdef BLIS_ENABLE_MIXED_PRECISION_NORM
 #define BLIS_NORMFV_MIXED_PREC_PATH( ctype, ctype_r, ch, chr ) \
 	if ( PASTECH(chr,_IS_FLOAT) ) \
@@ -344,8 +345,9 @@ void PASTEMAC(ch,varname) \
 }
 
 //INSERT_GENTFUNCR_BASIC( normfv_unb_var1, sumsqv_unb_var1 )
-GENTFUNCR( scomplex, float,  c, s, normfv_unb_var1, sumsqv_unb_var1 )
-GENTFUNCR( dcomplex, double, z, d, normfv_unb_var1, sumsqv_unb_var1 )
+GENTFUNCR( hcomplex, _Float16, y, h, normfv_unb_var1, sumsqv_unb_var1 )
+GENTFUNCR( scomplex, float,    c, s, normfv_unb_var1, sumsqv_unb_var1 )
+GENTFUNCR( dcomplex, double,   z, d, normfv_unb_var1, sumsqv_unb_var1 )
 
 #undef  GENTFUNCR
 // We've disabled the dotv-based implementation because that method of
@@ -479,11 +481,13 @@ void PASTEMAC(ch,varname) \
 	bli_tcopys( chr,chr, sqrt_sumsq, *norm ); \
 }
 #endif
-GENTFUNCR( float,   float,  s, s, normfv_unb_var1, sumsqv_unb_var1 )
-GENTFUNCR( double,  double, d, d, normfv_unb_var1, sumsqv_unb_var1 )
+GENTFUNCR( _Float16, _Float16, h, h, normfv_unb_var1, sumsqv_unb_var1 )
+GENTFUNCR( float,    float,    s, s, normfv_unb_var1, sumsqv_unb_var1 )
+GENTFUNCR( double,   double,   d, d, normfv_unb_var1, sumsqv_unb_var1 )
 
 #undef s_IS_FLOAT
 #undef d_IS_FLOAT
+#undef h_IS_FLOAT
 
 
 #undef  GENTFUNCR

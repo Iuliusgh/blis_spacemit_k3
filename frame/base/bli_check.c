@@ -144,9 +144,11 @@ err_t bli_check_valid_datatype( num_t dt )
 {
 	err_t e_val = BLIS_SUCCESS;
 
-	if ( dt != BLIS_FLOAT &&
+	if ( dt != BLIS_HALF &&
+		 dt != BLIS_FLOAT &&
 	     dt != BLIS_DOUBLE &&
-	     dt != BLIS_SCOMPLEX &&
+	     dt != BLIS_HCOMPLEX &&
+		 dt != BLIS_SCOMPLEX &&
 	     dt != BLIS_DCOMPLEX &&
 	     dt != BLIS_INT &&
 	     dt != BLIS_CONSTANT )
@@ -212,9 +214,11 @@ err_t bli_check_floating_datatype( num_t dt )
 {
 	err_t e_val = BLIS_SUCCESS;
 
-	if ( dt != BLIS_FLOAT &&
+	if ( dt != BLIS_HALF &&
+		 dt != BLIS_FLOAT &&
 	     dt != BLIS_DOUBLE &&
-	     dt != BLIS_SCOMPLEX &&
+		 dt != BLIS_HCOMPLEX &&
+		 dt != BLIS_SCOMPLEX &&
 	     dt != BLIS_DCOMPLEX )
 		e_val = BLIS_EXPECTED_FLOATING_POINT_DATATYPE;
 
@@ -236,7 +240,8 @@ err_t bli_check_real_datatype( num_t dt )
 {
 	err_t e_val = BLIS_SUCCESS;
 
-	if ( dt != BLIS_FLOAT &&
+	if ( dt != BLIS_HALF &&
+		 dt != BLIS_FLOAT &&
 	     dt != BLIS_DOUBLE )
 		e_val = BLIS_EXPECTED_REAL_DATATYPE;
 
@@ -306,9 +311,11 @@ err_t bli_check_datatype_real_proj_of( num_t dt_c, num_t dt_r )
 	err_t e_val = BLIS_SUCCESS;
 
 	if ( ( dt_c == BLIS_CONSTANT && bli_is_complex( dt_r ) ) ||
-	     ( dt_c == BLIS_FLOAT    && dt_r != BLIS_FLOAT     ) ||
+	     ( dt_c == BLIS_HALF     && dt_r != BLIS_HALF      ) ||
+		 ( dt_c == BLIS_FLOAT    && dt_r != BLIS_FLOAT     ) ||
 	     ( dt_c == BLIS_DOUBLE   && dt_r != BLIS_DOUBLE    ) ||
-	     ( dt_c == BLIS_SCOMPLEX && dt_r != BLIS_FLOAT     ) ||
+	     ( dt_c == BLIS_HCOMPLEX && dt_r != BLIS_HALF      ) ||
+		 ( dt_c == BLIS_SCOMPLEX && dt_r != BLIS_FLOAT     ) ||
 	     ( dt_c == BLIS_DCOMPLEX && dt_r != BLIS_DOUBLE    ) )
 		e_val = BLIS_EXPECTED_REAL_PROJ_OF;
 
@@ -347,7 +354,13 @@ err_t bli_check_consistent_precisions( num_t dt_a, num_t dt_b )
 {
 	err_t e_val = BLIS_SUCCESS;
 
-	if ( dt_a == BLIS_FLOAT )
+	if ( dt_a == BLIS_HALF )
+	{
+		if ( dt_b != BLIS_HALF  && 
+			 dt_b != BLIS_HCOMPLEX )
+			e_val = BLIS_INCONSISTENT_PRECISIONS;
+	}
+	else if ( dt_a == BLIS_FLOAT )
 	{
 		if ( dt_b != BLIS_FLOAT &&
 		     dt_b != BLIS_SCOMPLEX )

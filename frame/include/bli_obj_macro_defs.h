@@ -48,6 +48,12 @@ BLIS_INLINE num_t bli_obj_dt( const obj_t* obj )
 	       ( obj->info & BLIS_DATATYPE_BITS );
 }
 
+BLIS_INLINE bool bli_obj_is_half( const obj_t* obj )
+{
+	return ( bool )
+	       ( bli_obj_dt( obj ) == BLIS_BITVAL_HALF_TYPE );
+}
+
 BLIS_INLINE bool bli_obj_is_float( const obj_t* obj )
 {
 	return ( bool )
@@ -96,6 +102,12 @@ BLIS_INLINE prec_t bli_obj_prec( const obj_t* obj )
 	       ( obj->info & BLIS_PRECISION_BIT );
 }
 
+BLIS_INLINE bool bli_obj_is_half_prec( const obj_t* obj )
+{
+	return ( bool )
+	       ( bli_obj_prec( obj ) == BLIS_BITVAL_HALF_PREC );
+}
+
 BLIS_INLINE bool bli_obj_is_single_prec( const obj_t* obj )
 {
 	return ( bool )
@@ -106,6 +118,12 @@ BLIS_INLINE bool bli_obj_is_double_prec( const obj_t* obj )
 {
 	return ( bool )
 	       ( bli_obj_prec( obj ) == BLIS_BITVAL_DOUBLE_PREC );
+}
+
+BLIS_INLINE num_t bli_obj_dt_proj_to_half_prec( const obj_t* obj )
+{
+	return ( num_t )
+	       ( bli_obj_dt( obj ) & ~BLIS_BITVAL_HALF_PREC );
 }
 
 BLIS_INLINE num_t bli_obj_dt_proj_to_single_prec( const obj_t* obj )
@@ -1087,6 +1105,7 @@ BLIS_INLINE void bli_obj_init_finish( num_t dt, dim_t m, dim_t n, void* p, inc_t
 	bli_obj_set_strides( rs, cs, obj );
 
 	siz_t elem_size = sizeof( float );
+	if ( bli_dt_prec_is_half( dt ) ) elem_size *= 1/2;
 	if ( bli_dt_prec_is_double( dt ) ) elem_size *= 2;
 	if ( bli_dt_dom_is_complex( dt ) ) elem_size *= 2;
 	bli_obj_set_elem_size( elem_size, obj );
@@ -1100,6 +1119,8 @@ BLIS_INLINE void bli_obj_init_finish( num_t dt, dim_t m, dim_t n, void* p, inc_t
 	                                          bli_cimag( *( scomplex* )s ) = 0.0F; }
 	else if ( bli_dt_prec_is_double( dt ) ) { bli_zreal( *( dcomplex* )s ) = 1.0;
 	                                          bli_zimag( *( dcomplex* )s ) = 0.0; }
+	else if ( bli_dt_prec_is_half( dt ) )   { bli_zreal( *( hcomplex* )s ) = 1.0f16;
+	                                          bli_zimag( *( hcomplex* )s ) = 0.0f16; }
 }
 
 // Finish the initialization started by the 1x1-specific static initializer
@@ -1166,9 +1187,10 @@ BLIS_INLINE void* bli_obj_buffer_at_off( const obj_t* obj )
 BLIS_INLINE const void* bli_obj_buffer_for_const( num_t dt, const obj_t* obj )
 {
 	void* p;
-
-	if      ( dt == BLIS_FLOAT    ) p = &((( constdata_t* )bli_obj_buffer( obj ))->s);
+	if      ( dt == BLIS_HALF     ) p = &((( constdata_t* )bli_obj_buffer( obj ))->h);
+	else if ( dt == BLIS_FLOAT    ) p = &((( constdata_t* )bli_obj_buffer( obj ))->s);
 	else if ( dt == BLIS_DOUBLE   ) p = &((( constdata_t* )bli_obj_buffer( obj ))->d);
+	else if ( dt == BLIS_HCOMPLEX ) p = &((( constdata_t* )bli_obj_buffer( obj ))->y);
 	else if ( dt == BLIS_SCOMPLEX ) p = &((( constdata_t* )bli_obj_buffer( obj ))->c);
 	else if ( dt == BLIS_DCOMPLEX ) p = &((( constdata_t* )bli_obj_buffer( obj ))->z);
 	else                            p = &((( constdata_t* )bli_obj_buffer( obj ))->i);

@@ -652,15 +652,20 @@ void PASTEMAC(opname) \
 	/* Handle constants up front. */ \
 	if ( dt == BLIS_CONSTANT ) \
 	{ \
+		const _Float16* hp = bli_obj_buffer_for_const( BLIS_HALF,     x ); \
 		const float*    sp = bli_obj_buffer_for_const( BLIS_FLOAT,    x ); \
 		const double*   dp = bli_obj_buffer_for_const( BLIS_DOUBLE,   x ); \
+		const hcomplex* yp = bli_obj_buffer_for_const( BLIS_HCOMPLEX, x ); \
 		const scomplex* cp = bli_obj_buffer_for_const( BLIS_SCOMPLEX, x ); \
 		const dcomplex* zp = bli_obj_buffer_for_const( BLIS_DCOMPLEX, x ); \
 		const gint_t*   ip = bli_obj_buffer_for_const( BLIS_INT,      x ); \
 \
 		fprintf( file, "%s\n", s1 ); \
+		fprintf( file, " half:      %9.2e\n",         (float) bli_hreal( *hp ) ); \
 		fprintf( file, " float:     %9.2e\n",         bli_sreal( *sp ) ); \
 		fprintf( file, " double:    %9.2e\n",         bli_dreal( *dp ) ); \
+		fprintf( file, " hcomplex:  %9.2e + %9.2e\n", (float) bli_yreal( *yp ), \
+		                                              (float) bli_yimag( *yp ) ); \
 		fprintf( file, " scomplex:  %9.2e + %9.2e\n", bli_creal( *cp ), \
 		                                              bli_cimag( *cp ) ); \
 		fprintf( file, " dcomplex:  %9.2e + %9.2e\n", bli_zreal( *zp ), \

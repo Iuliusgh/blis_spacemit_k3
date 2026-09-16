@@ -52,8 +52,10 @@ BLIS_INLINE void bli_mbool_set_dt( bool val, num_t dt, mbool_t* mb )
 
 BLIS_EXPORT_BLIS mbool_t* bli_mbool_create
      (
+       bool b_h,
        bool b_s,
        bool b_d,
+       bool b_y,
        bool b_c,
        bool b_z
      );
@@ -61,8 +63,10 @@ BLIS_EXPORT_BLIS mbool_t* bli_mbool_create
 BLIS_EXPORT_BLIS void bli_mbool_init
      (
        mbool_t* b,
+       bool     b_h,
        bool     b_s,
        bool     b_d,
+       bool     b_y,
        bool     b_c,
        bool     b_z
      );

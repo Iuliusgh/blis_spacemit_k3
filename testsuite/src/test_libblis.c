@@ -3116,6 +3116,23 @@ double libblis_test_l3_flops
 
 // ---
 
+int libblis_test_dt_str_has_hp_char( test_params_t* params )
+{
+	return libblis_test_dt_str_has_hp_char_str( params->n_datatypes,
+	                                            params->datatype_char );
+}
+
+int libblis_test_dt_str_has_hp_char_str( int n, char* str )
+{
+	for ( int i = 0; i < n; ++i )
+	{
+		if ( str[i] == 'h' ||
+		     str[i] == 'y' ) return TRUE;
+	}
+
+	return FALSE;
+}
+
 int libblis_test_dt_str_has_sp_char( test_params_t* params )
 {
 	return libblis_test_dt_str_has_sp_char_str( params->n_datatypes,

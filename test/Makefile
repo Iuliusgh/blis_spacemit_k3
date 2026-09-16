@@ -131,8 +131,9 @@ CINCFLAGS      := -I$(INC_PATH)
 CFLAGS         := $(call get-user-cflags-for,$(CONFIG_NAME))
 
 # Add local header paths to CFLAGS
-CFLAGS         += -I$(TEST_SRC_PATH)
+#CFLAGS         += -I$(TEST_SRC_PATH) -g
 
+#CFLAGS         += -finstrument-functions -g -O0
 # Locate the libblis library to which we will link.
 #LIBBLIS_LINK   := $(LIB_PATH)/$(LIBBLIS_L)
 
@@ -143,9 +144,9 @@ CFLAGS         += -I$(TEST_SRC_PATH)
 #
 
 # Define the operations we will test.
-TEST_OPS := dotv axpyv axpbyv\
-            gemv ger hemv her her2 trmv trsv \
-            gemm gemm3m gemm_batch hemm herk her2k trmm trsm
+TEST_OPS := gemm_vmadot #dotv axpyv axpbyv\
+            #gemv ger hemv her her2 trmv trsv \
+            #gemm gemm3m gemm_batch hemm herk her2k trmm trsm
 
 # Optionally test gemmt, which some libraries might not implement.
 ifeq ($(BUILD_GEMMT),yes)
@@ -175,6 +176,10 @@ mkl: check-env $(TEST_BINS_MKL)
 $(TEST_OBJ_PATH)/%.o: $(TEST_SRC_PATH)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# --- explicit rule for trace.o, must NOT have -finstrument-functions ---
+#trace.o: trace.c
+#	$(CC) $(filter-out -finstrument-functions,$(CFLAGS)) -c $< -o $@
+
 
 test_%_openblas.o: test_%.c
 	$(CC) $(CFLAGS) -DBLAS=\"openblas\" -c $< -o $@
@@ -202,6 +207,8 @@ test_%_mkl.x: test_%_mkl.o $(LIBBLIS_LINK)
 test_%_blis.x: test_%_blis.o $(LIBBLIS_LINK)
 	$(LINKER) $<                             $(LIBBLIS_LINK) $(LDFLAGS) -o $@
 
+#test_%_blis.x: test_%_blis.o trace.o $(LIBBLIS_LINK)
+#	$(LINKER) $< trace.o          $(LIBBLIS_LINK) $(LDFLAGS) -rdynamic -o $@
 
 # -- Environment check rules --
 

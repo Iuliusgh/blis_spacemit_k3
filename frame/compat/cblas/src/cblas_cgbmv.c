@@ -150,7 +150,7 @@ void cblas_cgbmv(enum CBLAS_ORDER order,
       if (TransA == CblasConjTrans)
       {
          if (x != X) free(x);
-         if (M > 0 && N > 0)
+         if (N > 0)
          {
             do
             {

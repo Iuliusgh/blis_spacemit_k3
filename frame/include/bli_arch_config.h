@@ -187,6 +187,12 @@ INSERT_GENTCONF
 #include "bli_family_sifive_x280.h"
 #endif
 
+// -- SpacemiT families --
+
+#ifdef BLIS_FAMILY_SPACEMIT_K3
+#include "bli_family_spacemit_k3.h"
+#endif
+
 // -- Generic --
 
 #ifdef BLIS_FAMILY_GENERIC
@@ -287,6 +293,12 @@ INSERT_GENTCONF
 #include "bli_kernels_sifive_x280.h"
 #endif
 
+
+// -- SpacemiT RISC-V architectures --
+
+#ifdef BLIS_KERNELS_SPACEMIT_K3
+#include "bli_kernels_spacemit_k3.h"
+#endif
 
 #endif
 

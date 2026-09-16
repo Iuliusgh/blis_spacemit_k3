@@ -204,7 +204,9 @@ void PASTEMAC(ch,opname,arch,suf) \
 }
 
 //INSERT_GENTFUNC_BASIC( dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC( _Float16, h, dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX, 4 )
 GENTFUNC( float,    s, dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX, 4 )
 GENTFUNC( double,   d, dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX, 4 )
+GENTFUNC( hcomplex, y, dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX, 4 )
 GENTFUNC( scomplex, c, dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX, 4 )
 GENTFUNC( dcomplex, z, dotxaxpyf, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX, 4 )

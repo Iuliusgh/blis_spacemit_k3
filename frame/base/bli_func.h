@@ -102,8 +102,10 @@ BLIS_INLINE void bli_func_copy_dt
 
 BLIS_EXPORT_BLIS func_t* bli_func_create
      (
+       void_fp ptr_h,
        void_fp ptr_s,
        void_fp ptr_d,
+       void_fp ptr_y,
        void_fp ptr_c,
        void_fp ptr_z
      );
@@ -111,8 +113,10 @@ BLIS_EXPORT_BLIS func_t* bli_func_create
 BLIS_EXPORT_BLIS void bli_func_init
      (
        func_t* f,
+       void_fp ptr_h,
        void_fp ptr_s,
        void_fp ptr_d,
+       void_fp ptr_y,
        void_fp ptr_c,
        void_fp ptr_z
      );
@@ -126,19 +130,23 @@ BLIS_EXPORT_BLIS void bli_func_free( func_t* f );
 
 BLIS_EXPORT_BLIS func2_t* bli_func2_create
      (
-       void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sc, void_fp ptr_sz,
-       void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dc, void_fp ptr_dz,
-       void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cc, void_fp ptr_cz,
-       void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zc, void_fp ptr_zz
+       void_fp ptr_hh, void_fp ptr_hs, void_fp ptr_hd, void_fp ptr_hy, void_fp ptr_hc, void_fp ptr_hz,
+       void_fp ptr_sh, void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sy, void_fp ptr_sc, void_fp ptr_sz,
+       void_fp ptr_dh, void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dy, void_fp ptr_dc, void_fp ptr_dz,
+       void_fp ptr_yh, void_fp ptr_ys, void_fp ptr_yd, void_fp ptr_yy, void_fp ptr_yc, void_fp ptr_yz,
+       void_fp ptr_ch, void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cy, void_fp ptr_cc, void_fp ptr_cz,
+       void_fp ptr_zh, void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zy, void_fp ptr_zc, void_fp ptr_zz
      );
 
 BLIS_EXPORT_BLIS void bli_func2_init
      (
        func2_t* f,
-       void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sc, void_fp ptr_sz,
-       void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dc, void_fp ptr_dz,
-       void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cc, void_fp ptr_cz,
-       void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zc, void_fp ptr_zz
+       void_fp ptr_hh, void_fp ptr_hs, void_fp ptr_hd, void_fp ptr_hy, void_fp ptr_hc, void_fp ptr_hz,
+       void_fp ptr_sh, void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sy, void_fp ptr_sc, void_fp ptr_sz,
+       void_fp ptr_dh, void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dy, void_fp ptr_dc, void_fp ptr_dz,
+       void_fp ptr_yh, void_fp ptr_ys, void_fp ptr_yd, void_fp ptr_yy, void_fp ptr_yc, void_fp ptr_yz,
+       void_fp ptr_ch, void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cy, void_fp ptr_cc, void_fp ptr_cz,
+       void_fp ptr_zh, void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zy, void_fp ptr_zc, void_fp ptr_zz
      );
 
 BLIS_EXPORT_BLIS void bli_func2_init_null

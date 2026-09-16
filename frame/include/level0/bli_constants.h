@@ -40,6 +40,10 @@
 
 // 1
 
+#define bli_h1 \
+\
+	( ( _Float16* ) bli_obj_buffer_for_const( BLIS_HALF,     &BLIS_ONE ) )
+
 #define bli_s1 \
 \
 	( ( float*    ) bli_obj_buffer_for_const( BLIS_FLOAT,    &BLIS_ONE ) )
@@ -47,6 +51,10 @@
 #define bli_d1 \
 \
 	( ( double*   ) bli_obj_buffer_for_const( BLIS_DOUBLE,   &BLIS_ONE ) )
+
+#define bli_y1 \
+\
+	( ( hcomplex* ) bli_obj_buffer_for_const( BLIS_HCOMPLEX, &BLIS_ONE ) )
 
 #define bli_c1 \
 \
@@ -62,6 +70,10 @@
 
 // 0
 
+#define bli_h0 \
+\
+	( ( _Float16*    ) bli_obj_buffer_for_const( BLIS_HALF,  &BLIS_ZERO ) )
+
 #define bli_s0 \
 \
 	( ( float*    ) bli_obj_buffer_for_const( BLIS_FLOAT,    &BLIS_ZERO ) )
@@ -69,6 +81,10 @@
 #define bli_d0 \
 \
 	( ( double*   ) bli_obj_buffer_for_const( BLIS_DOUBLE,   &BLIS_ZERO ) )
+
+#define bli_y0 \
+\
+	( ( hcomplex* ) bli_obj_buffer_for_const( BLIS_HCOMPLEX, &BLIS_ZERO ) )
 
 #define bli_c0 \
 \
@@ -84,6 +100,11 @@
 
 // -1
 
+#define bli_hm1 \
+\
+	( ( _Float16*    ) bli_obj_buffer_for_const( BLIS_HALF,  &BLIS_MINUS_ONE ) )
+
+
 #define bli_sm1 \
 \
 	( ( float*    ) bli_obj_buffer_for_const( BLIS_FLOAT,    &BLIS_MINUS_ONE ) )
@@ -91,6 +112,10 @@
 #define bli_dm1 \
 \
 	( ( double*   ) bli_obj_buffer_for_const( BLIS_DOUBLE,   &BLIS_MINUS_ONE ) )
+
+#define bli_ym1 \
+\
+	( ( hcomplex* ) bli_obj_buffer_for_const( BLIS_HCOMPLEX, &BLIS_MINUS_ONE ) )
 
 #define bli_cm1 \
 \

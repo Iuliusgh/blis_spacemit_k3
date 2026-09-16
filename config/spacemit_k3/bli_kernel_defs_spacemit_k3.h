@@ -4,7 +4,7 @@
    An object-based framework for developing high-performance BLAS-like
    libraries.
 
-   Copyright (C) 2014, The University of Texas at Austin
+   Copyright (C) 2023, SiFive, Inc.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
@@ -32,59 +32,24 @@
 
 */
 
-#include "blis.h"
+//#ifndef BLIS_KERNEL_DEFS_H
+//#define BLIS_KERNEL_DEFS_H
 
 
-mbool_t* bli_mbool_create
-     (
-       bool b_h,
-       bool b_s,
-       bool b_d,
-       bool b_y,
-       bool b_c,
-       bool b_z
-     )
-{
-	mbool_t* b;
-	err_t r_val;
+// -- REGISTER BLOCK SIZES (FOR REFERENCE KERNELS) ----------------------------
+#define BLIS_MR_s  8
+//#define BLIS_MR_d   7
+//#define BLIS_MR_c   6
+//#define BLIS_MR_z   6
 
-	b = ( mbool_t* ) bli_malloc_intl( sizeof( mbool_t ), &r_val );
+//#define BLIS_PACKMR_s   8
+//#define BLIS_PACKMR_d   8
+//#define BLIS_PACKMR_c   8
+//#define BLIS_PACKMR_z   8
 
-	bli_mbool_init
-	(
-	  b,
-    b_h,
-	  b_s,
-	  b_d,
-	  b_y,
-    b_c,
-	  b_z
-	);
-
-	return b;
-}
-
-void bli_mbool_init
-     (
-       mbool_t* b,
-       bool     b_h,
-       bool     b_s,
-       bool     b_d,
-       bool     b_y,
-       bool     b_c,
-       bool     b_z
-     )
-{
-  bli_mbool_set_dt( b_h, BLIS_HALF,    b );
-	bli_mbool_set_dt( b_s, BLIS_FLOAT,    b );
-	bli_mbool_set_dt( b_d, BLIS_DOUBLE,   b );
-  bli_mbool_set_dt( b_y, BLIS_HCOMPLEX, b );
-  bli_mbool_set_dt( b_c, BLIS_SCOMPLEX, b );
-	bli_mbool_set_dt( b_z, BLIS_DCOMPLEX, b );
-}
-
-void bli_mbool_free( mbool_t* b )
-{
-	bli_free_intl( b );
-}
+#define BLIS_NR_s   8
+//#define BLIS_NR_d   32
+//#define BLIS_NR_c   32
+//#define BLIS_NR_z   16
+//#endif
 

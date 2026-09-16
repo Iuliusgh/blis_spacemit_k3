@@ -322,6 +322,11 @@ arch_t bli_arch_query_id_impl( void )
 		id = BLIS_ARCH_SIFIVE_X280;
 		#endif
 
+		// SpacemiT microarchitectures
+		#ifdef BLIS_FAMILY_SPACEMIT_K3
+		id = BLIS_ARCH_SPACEMIT_K3;
+		#endif
+
 		// Generic microarchitecture.
 		#ifdef BLIS_FAMILY_GENERIC
 		id = BLIS_ARCH_GENERIC;
@@ -389,6 +394,8 @@ static const char* config_name[ BLIS_NUM_ARCHS ] =
 
     "sifive_rvv",
     "sifive_x280",
+
+	"spacemit_k1",
 
     "generic"
 };

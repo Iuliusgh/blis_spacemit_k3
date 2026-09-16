@@ -120,14 +120,16 @@ typedef uint32_t objbits_t;  // object information bit field
 
 // Define the number of floating-point types supported, and the size of the
 // largest type.
-#define BLIS_NUM_FP_TYPES   4
+#define BLIS_NUM_FP_TYPES   6
 #define BLIS_MAX_TYPE_SIZE  sizeof(dcomplex)
 
 // There are some places where we need to use sizeof() inside of a C
 // preprocessor #if conditional, and so here we define the various sizes
 // for those purposes.
+#define BLIS_SIZEOF_H      2  // sizeof(half)
 #define BLIS_SIZEOF_S      4  // sizeof(float)
 #define BLIS_SIZEOF_D      8  // sizeof(double)
+#define BLIS_SIZEOF_Y      4  // sizeof(hcomplex)
 #define BLIS_SIZEOF_C      8  // sizeof(scomplex)
 #define BLIS_SIZEOF_Z      16 // sizeof(dcomplex)
 
@@ -140,6 +142,13 @@ typedef uint32_t objbits_t;  // object information bit field
 	#include <complex>
 
 	// Typedef official C++ complex types to BLIS complex type names.
+
+	// This cpp guard provides a temporary hack to allow libflame
+	// interoperability with BLIS.
+	#ifndef _DEFINED_HCOMPLEX
+	#define _DEFINED_HCOMPLEX
+	typedef std::complex<_Float16> hcomplex;
+	#endif
 
 	// This cpp guard provides a temporary hack to allow libflame
 	// interoperability with BLIS.
@@ -167,6 +176,13 @@ typedef uint32_t objbits_t;  // object information bit field
 
 		// This cpp guard provides a temporary hack to allow libflame
 		// interoperability with BLIS.
+		#ifndef _DEFINED_HCOMPLEX
+		#define _DEFINED_HCOMPLEX
+		typedef _Float16 complex hcomplex;
+		#endif
+
+		// This cpp guard provides a temporary hack to allow libflame
+		// interoperability with BLIS.
 		#ifndef _DEFINED_SCOMPLEX
 		#define _DEFINED_SCOMPLEX
 		typedef float complex scomplex;
@@ -183,6 +199,17 @@ typedef uint32_t objbits_t;  // object information bit field
 	#endif
 
 #else // ifndef BLIS_ENABLE_C99_COMPLEX
+	
+	// This cpp guard provides a temporary hack to allow libflame
+	// interoperability with BLIS.
+	#ifndef _DEFINED_HCOMPLEX
+	#define _DEFINED_HCOMPLEX
+	typedef struct hcomplex
+	{
+		_Float16  real;
+		_Float16  imag;
+	} hcomplex;
+	#endif
 
 	// This cpp guard provides a temporary hack to allow libflame
 	// interoperability with BLIS.
@@ -343,14 +370,17 @@ typedef void  (*free_ft)  ( void*  p    );
 
 #define BLIS_BITVAL_REAL                  0x0
 #define BLIS_BITVAL_COMPLEX               BLIS_DOMAIN_BIT
-#define BLIS_BITVAL_SINGLE_PREC           0x0
-#define BLIS_BITVAL_DOUBLE_PREC         ( 0x1 << BLIS_PRECISION_SHIFT )
-#define   BLIS_BITVAL_FLOAT_TYPE          0x0
-#define   BLIS_BITVAL_SCOMPLEX_TYPE       BLIS_DOMAIN_BIT
+#define BLIS_BITVAL_HALF_PREC           ( 0x0 << BLIS_PRECISION_SHIFT )
+#define BLIS_BITVAL_SINGLE_PREC         ( 0x1 << BLIS_PRECISION_SHIFT )
+#define BLIS_BITVAL_DOUBLE_PREC         ( 0x2 << BLIS_PRECISION_SHIFT )
+#define   BLIS_BITVAL_HALF_TYPE           BLIS_BITVAL_HALF_PREC
+#define   BLIS_BITVAL_HCOMPLEX_TYPE     ( BLIS_DOMAIN_BIT | BLIS_BITVAL_HALF_PREC )
+#define   BLIS_BITVAL_FLOAT_TYPE          BLIS_BITVAL_SINGLE_PREC
+#define   BLIS_BITVAL_SCOMPLEX_TYPE     ( BLIS_DOMAIN_BIT | BLIS_BITVAL_SINGLE_PREC )
 #define   BLIS_BITVAL_DOUBLE_TYPE         BLIS_BITVAL_DOUBLE_PREC
 #define   BLIS_BITVAL_DCOMPLEX_TYPE     ( BLIS_DOMAIN_BIT | BLIS_BITVAL_DOUBLE_PREC )
-#define   BLIS_BITVAL_INT_TYPE            0x04
-#define   BLIS_BITVAL_CONST_TYPE          0x05
+#define   BLIS_BITVAL_INT_TYPE            0x06
+#define   BLIS_BITVAL_CONST_TYPE          0x07
 #define BLIS_BITVAL_NO_TRANS              0x0
 #define BLIS_BITVAL_TRANS                 BLIS_TRANS_BIT
 #define BLIS_BITVAL_NO_CONJ               0x0
@@ -445,13 +475,15 @@ typedef enum struc_e
 
 typedef enum num_e
 {
+	BLIS_HALF              = BLIS_BITVAL_HALF_TYPE,
 	BLIS_FLOAT             = BLIS_BITVAL_FLOAT_TYPE,
 	BLIS_DOUBLE            = BLIS_BITVAL_DOUBLE_TYPE,
+	BLIS_HCOMPLEX          = BLIS_BITVAL_HCOMPLEX_TYPE,
 	BLIS_SCOMPLEX          = BLIS_BITVAL_SCOMPLEX_TYPE,
 	BLIS_DCOMPLEX          = BLIS_BITVAL_DCOMPLEX_TYPE,
 	BLIS_INT               = BLIS_BITVAL_INT_TYPE,
 	BLIS_CONSTANT          = BLIS_BITVAL_CONST_TYPE,
-	BLIS_DT_LO             = BLIS_FLOAT,
+	BLIS_DT_LO             = BLIS_HALF,
 	BLIS_DT_HI             = BLIS_DCOMPLEX
 } num_t;
 
@@ -463,6 +495,7 @@ typedef enum dom_e
 
 typedef enum prec_e
 {
+	BLIS_HALF_PREC         = BLIS_BITVAL_HALF_PREC,
 	BLIS_SINGLE_PREC       = BLIS_BITVAL_SINGLE_PREC,
 	BLIS_DOUBLE_PREC       = BLIS_BITVAL_DOUBLE_PREC
 } prec_t;
@@ -1010,6 +1043,9 @@ typedef enum arch_e
 	BLIS_ARCH_SIFIVE_RVV,
 	BLIS_ARCH_SIFIVE_X280,
 
+	//SpacemiT
+	BLIS_ARCH_SPACEMIT_K3,
+	
 	// Generic architecture/configuration
 	BLIS_ARCH_GENERIC,
 
@@ -1217,8 +1253,10 @@ typedef struct auxinfo_s
 // global scalar constants in bli_const.c.
 typedef struct constdata_s
 {
+	_Float16 h;
 	float    s;
 	double   d;
+	hcomplex y;
 	scomplex c;
 	dcomplex z;
 	gint_t   i;
@@ -1419,20 +1457,24 @@ BLIS_INLINE void bli_obj_init_subpart_from( const obj_t* a, obj_t* b )
 
 #define bli_obj_init_constdata( val ) \
 { \
+	.h =           (_Float16)val,\
 	.s =           ( float  )val, \
 	.d =           ( double )val, \
-	.c = { .real = ( float  )val, .imag = 0.0f }, \
-	.z = { .real = ( double )val, .imag = 0.0 }, \
+	.y = { .real = ( _Float16 )val, .imag = 0.0f16 }, \
+	.c = { .real = ( float    )val, .imag = 0.0f }, \
+	.z = { .real = ( double   )val, .imag = 0.0 }, \
 	.i =           ( gint_t )val, \
 }
 
 #define bli_obj_init_constdata_ri( valr, vali ) \
 { \
-	.s =           ( float  )valr, \
-	.d =           ( double )valr, \
-	.c = { .real = ( float  )valr, .imag = ( float  )vali }, \
-	.z = { .real = ( double )valr, .imag = ( double )vali }, \
-	.i =           ( gint_t )valr, \
+	.h  =           ( _Float16 )valr, \
+	.s  =           ( float    )valr, \
+	.d  =           ( double   )valr, \
+	.y  = { .real = ( _Float16 )valr, .imag = ( _Float16 )vali }, \
+	.c  = { .real = ( float    )valr, .imag = ( float    )vali }, \
+	.z  = { .real = ( double   )valr, .imag = ( double   )vali }, \
+	.i  =           ( gint_t   )valr, \
 }
 
 

@@ -38,9 +38,11 @@
 
 func_t* bli_func_create
      (
+	   void_fp ptr_h,
        void_fp ptr_s,
        void_fp ptr_d,
-       void_fp ptr_c,
+       void_fp ptr_y,  
+	   void_fp ptr_c,
        void_fp ptr_z
      )
 {
@@ -52,8 +54,10 @@ func_t* bli_func_create
 	bli_func_init
 	(
 	  f,
+	  ptr_h,
 	  ptr_s,
 	  ptr_d,
+	  ptr_y, 
 	  ptr_c,
 	  ptr_z
 	);
@@ -64,14 +68,18 @@ func_t* bli_func_create
 void bli_func_init
      (
        func_t* f,
+	   void_fp ptr_h,
        void_fp ptr_s,
        void_fp ptr_d,
-       void_fp ptr_c,
+       void_fp ptr_y,  
+	   void_fp ptr_c,
        void_fp ptr_z
      )
 {
+	bli_func_set_dt( ptr_h, BLIS_HALF,     f );
 	bli_func_set_dt( ptr_s, BLIS_FLOAT,    f );
 	bli_func_set_dt( ptr_d, BLIS_DOUBLE,   f );
+	bli_func_set_dt( ptr_y, BLIS_HCOMPLEX, f );
 	bli_func_set_dt( ptr_c, BLIS_SCOMPLEX, f );
 	bli_func_set_dt( ptr_z, BLIS_DCOMPLEX, f );
 }
@@ -81,8 +89,10 @@ void bli_func_init_null
        func_t* f
      )
 {
+	bli_func_set_dt( NULL, BLIS_HALF,     f );
 	bli_func_set_dt( NULL, BLIS_FLOAT,    f );
 	bli_func_set_dt( NULL, BLIS_DOUBLE,   f );
+	bli_func_set_dt( NULL, BLIS_HCOMPLEX, f );
 	bli_func_set_dt( NULL, BLIS_SCOMPLEX, f );
 	bli_func_set_dt( NULL, BLIS_DCOMPLEX, f );
 }
@@ -94,10 +104,12 @@ void bli_func_free( func_t* f )
 
 func2_t* bli_func2_create
      (
-       void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sc, void_fp ptr_sz,
-       void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dc, void_fp ptr_dz,
-       void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cc, void_fp ptr_cz,
-       void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zc, void_fp ptr_zz
+       void_fp ptr_hh, void_fp ptr_hs, void_fp ptr_hd, void_fp ptr_hy, void_fp ptr_hc, void_fp ptr_hz,
+       void_fp ptr_sh, void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sy, void_fp ptr_sc, void_fp ptr_sz,
+       void_fp ptr_dh, void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dy, void_fp ptr_dc, void_fp ptr_dz,
+       void_fp ptr_yh, void_fp ptr_ys, void_fp ptr_yd, void_fp ptr_yy, void_fp ptr_yc, void_fp ptr_yz,
+	   void_fp ptr_ch, void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cy, void_fp ptr_cc, void_fp ptr_cz,
+       void_fp ptr_zh, void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zy, void_fp ptr_zc, void_fp ptr_zz
      )
 {
 	func2_t* f;
@@ -108,11 +120,13 @@ func2_t* bli_func2_create
 	bli_func2_init
 	(
 	  f,
-	  ptr_ss, ptr_sd, ptr_sc, ptr_sz,
-	  ptr_ds, ptr_dd, ptr_dc, ptr_dz,
-	  ptr_cs, ptr_cd, ptr_cc, ptr_cz,
-	  ptr_zs, ptr_zd, ptr_zc, ptr_zz
-	);
+	  ptr_hh, ptr_hs, ptr_hd, ptr_hy, ptr_hc, ptr_hz,
+	  ptr_sh, ptr_ss, ptr_sd, ptr_sy, ptr_sc, ptr_sz,
+	  ptr_dh, ptr_ds, ptr_dd, ptr_dy, ptr_dc, ptr_dz,
+	  ptr_yh, ptr_ys, ptr_yd, ptr_yy, ptr_yc, ptr_yz,
+	  ptr_ch, ptr_cs, ptr_cd, ptr_cy, ptr_cc, ptr_cz,
+	  ptr_zh, ptr_zs, ptr_zd, ptr_zy, ptr_zc, ptr_zz
+	); 
 
 	return f;
 }
@@ -120,28 +134,50 @@ func2_t* bli_func2_create
 void bli_func2_init
      (
        func2_t* f,
-       void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sc, void_fp ptr_sz,
-       void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dc, void_fp ptr_dz,
-       void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cc, void_fp ptr_cz,
-       void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zc, void_fp ptr_zz
+       void_fp ptr_hh, void_fp ptr_hs, void_fp ptr_hd, void_fp ptr_hy, void_fp ptr_hc, void_fp ptr_hz,
+       void_fp ptr_sh, void_fp ptr_ss, void_fp ptr_sd, void_fp ptr_sy, void_fp ptr_sc, void_fp ptr_sz,
+       void_fp ptr_dh, void_fp ptr_ds, void_fp ptr_dd, void_fp ptr_dy, void_fp ptr_dc, void_fp ptr_dz,
+       void_fp ptr_yh, void_fp ptr_ys, void_fp ptr_yd, void_fp ptr_yy, void_fp ptr_yc, void_fp ptr_yz,
+	   void_fp ptr_ch, void_fp ptr_cs, void_fp ptr_cd, void_fp ptr_cy, void_fp ptr_cc, void_fp ptr_cz,
+       void_fp ptr_zh, void_fp ptr_zs, void_fp ptr_zd, void_fp ptr_zy, void_fp ptr_zc, void_fp ptr_zz
      )
 {
-	bli_func2_set_dt( ptr_ss, BLIS_FLOAT,    BLIS_FLOAT,    f );
-	bli_func2_set_dt( ptr_ds, BLIS_DOUBLE,   BLIS_FLOAT,    f );
-	bli_func2_set_dt( ptr_cs, BLIS_SCOMPLEX, BLIS_FLOAT,    f );
-	bli_func2_set_dt( ptr_zs, BLIS_DCOMPLEX, BLIS_FLOAT,    f );
-	bli_func2_set_dt( ptr_sd, BLIS_FLOAT,    BLIS_DOUBLE,   f );
-	bli_func2_set_dt( ptr_dd, BLIS_DOUBLE,   BLIS_DOUBLE,   f );
-	bli_func2_set_dt( ptr_cd, BLIS_SCOMPLEX, BLIS_DOUBLE,   f );
-	bli_func2_set_dt( ptr_zd, BLIS_DCOMPLEX, BLIS_DOUBLE,   f );
-	bli_func2_set_dt( ptr_sc, BLIS_FLOAT,    BLIS_SCOMPLEX, f );
-	bli_func2_set_dt( ptr_dc, BLIS_DOUBLE,   BLIS_SCOMPLEX, f );
-	bli_func2_set_dt( ptr_cc, BLIS_SCOMPLEX, BLIS_SCOMPLEX, f );
-	bli_func2_set_dt( ptr_zc, BLIS_DCOMPLEX, BLIS_SCOMPLEX, f );
-	bli_func2_set_dt( ptr_sz, BLIS_FLOAT,    BLIS_DCOMPLEX, f );
-	bli_func2_set_dt( ptr_dz, BLIS_DOUBLE,   BLIS_DCOMPLEX, f );
-	bli_func2_set_dt( ptr_cz, BLIS_SCOMPLEX, BLIS_DCOMPLEX, f );
-	bli_func2_set_dt( ptr_zz, BLIS_DCOMPLEX, BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( ptr_hh,   BLIS_HALF,     BLIS_HALF,     f );
+	bli_func2_set_dt( ptr_sh,   BLIS_FLOAT,    BLIS_HALF,     f );
+	bli_func2_set_dt( ptr_dh,   BLIS_DOUBLE,   BLIS_HALF,     f );
+	bli_func2_set_dt( ptr_yh,   BLIS_HCOMPLEX, BLIS_HALF,     f );
+	bli_func2_set_dt( ptr_ch,   BLIS_SCOMPLEX, BLIS_HALF,     f );
+	bli_func2_set_dt( ptr_zh,   BLIS_DCOMPLEX, BLIS_HALF,     f );
+	bli_func2_set_dt( ptr_hs,   BLIS_HALF,     BLIS_FLOAT,    f );
+	bli_func2_set_dt( ptr_ss,   BLIS_FLOAT,    BLIS_FLOAT,    f );
+	bli_func2_set_dt( ptr_ds,   BLIS_DOUBLE,   BLIS_FLOAT,    f );
+	bli_func2_set_dt( ptr_ys,   BLIS_HCOMPLEX, BLIS_FLOAT,    f );
+	bli_func2_set_dt( ptr_cs,   BLIS_SCOMPLEX, BLIS_FLOAT,    f );
+	bli_func2_set_dt( ptr_zs,   BLIS_DCOMPLEX, BLIS_FLOAT,    f );
+	bli_func2_set_dt( ptr_hd,   BLIS_HALF,     BLIS_DOUBLE,   f );
+	bli_func2_set_dt( ptr_sd,   BLIS_FLOAT,    BLIS_DOUBLE,   f );
+	bli_func2_set_dt( ptr_dd,   BLIS_DOUBLE,   BLIS_DOUBLE,   f );
+	bli_func2_set_dt( ptr_yd,   BLIS_HCOMPLEX, BLIS_DOUBLE,   f );
+	bli_func2_set_dt( ptr_cd,   BLIS_SCOMPLEX, BLIS_DOUBLE,   f );
+	bli_func2_set_dt( ptr_zd,   BLIS_DCOMPLEX, BLIS_DOUBLE,   f );
+	bli_func2_set_dt( ptr_hy,   BLIS_HALF,     BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( ptr_sy,   BLIS_FLOAT,    BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( ptr_dy,   BLIS_DOUBLE,   BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( ptr_yy,   BLIS_HCOMPLEX, BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( ptr_cy,   BLIS_SCOMPLEX, BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( ptr_zy,   BLIS_DCOMPLEX, BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( ptr_hc,   BLIS_HALF,     BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( ptr_sc,   BLIS_FLOAT,    BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( ptr_dc,   BLIS_DOUBLE,   BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( ptr_yc,   BLIS_HCOMPLEX, BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( ptr_cc,   BLIS_SCOMPLEX, BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( ptr_zc,   BLIS_DCOMPLEX, BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( ptr_hz,   BLIS_HALF,     BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( ptr_sz,   BLIS_FLOAT,    BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( ptr_dz,   BLIS_DOUBLE,   BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( ptr_yz,   BLIS_HCOMPLEX, BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( ptr_cz,   BLIS_SCOMPLEX, BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( ptr_zz,   BLIS_DCOMPLEX, BLIS_DCOMPLEX, f );
 }
 
 void bli_func2_init_null
@@ -149,20 +185,40 @@ void bli_func2_init_null
        func2_t* f
      )
 {
+	bli_func2_set_dt( NULL, BLIS_HALF,     BLIS_HALF,     f );
+	bli_func2_set_dt( NULL, BLIS_FLOAT,    BLIS_HALF,     f );
+	bli_func2_set_dt( NULL, BLIS_DOUBLE,   BLIS_HALF,     f );
+	bli_func2_set_dt( NULL, BLIS_HCOMPLEX, BLIS_HALF,     f );
+	bli_func2_set_dt( NULL, BLIS_SCOMPLEX, BLIS_HALF,     f );
+	bli_func2_set_dt( NULL, BLIS_DCOMPLEX, BLIS_HALF,     f );
+	bli_func2_set_dt( NULL, BLIS_HALF,     BLIS_FLOAT,    f );
 	bli_func2_set_dt( NULL, BLIS_FLOAT,    BLIS_FLOAT,    f );
 	bli_func2_set_dt( NULL, BLIS_DOUBLE,   BLIS_FLOAT,    f );
+	bli_func2_set_dt( NULL, BLIS_HCOMPLEX, BLIS_FLOAT,    f );
 	bli_func2_set_dt( NULL, BLIS_SCOMPLEX, BLIS_FLOAT,    f );
 	bli_func2_set_dt( NULL, BLIS_DCOMPLEX, BLIS_FLOAT,    f );
+	bli_func2_set_dt( NULL, BLIS_HALF,     BLIS_DOUBLE,   f );
 	bli_func2_set_dt( NULL, BLIS_FLOAT,    BLIS_DOUBLE,   f );
 	bli_func2_set_dt( NULL, BLIS_DOUBLE,   BLIS_DOUBLE,   f );
+	bli_func2_set_dt( NULL, BLIS_HCOMPLEX, BLIS_DOUBLE,   f );
 	bli_func2_set_dt( NULL, BLIS_SCOMPLEX, BLIS_DOUBLE,   f );
 	bli_func2_set_dt( NULL, BLIS_DCOMPLEX, BLIS_DOUBLE,   f );
+	bli_func2_set_dt( NULL, BLIS_HALF,     BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_FLOAT,    BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_DOUBLE,   BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_HCOMPLEX, BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_SCOMPLEX, BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_DCOMPLEX, BLIS_HCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_HALF,     BLIS_SCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_FLOAT,    BLIS_SCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_DOUBLE,   BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_HCOMPLEX, BLIS_SCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_SCOMPLEX, BLIS_SCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_DCOMPLEX, BLIS_SCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_HALF,     BLIS_DCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_FLOAT,    BLIS_DCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_DOUBLE,   BLIS_DCOMPLEX, f );
+	bli_func2_set_dt( NULL, BLIS_HCOMPLEX, BLIS_DCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_SCOMPLEX, BLIS_DCOMPLEX, f );
 	bli_func2_set_dt( NULL, BLIS_DCOMPLEX, BLIS_DCOMPLEX, f );
 }

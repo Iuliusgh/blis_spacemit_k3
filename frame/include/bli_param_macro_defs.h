@@ -62,6 +62,12 @@ BLIS_INLINE siz_t bli_offset_past_alignment( siz_t p, siz_t size )
 
 // datatype
 
+BLIS_INLINE bool bli_is_half( num_t dt )
+{
+	return ( bool )
+	       ( dt == BLIS_HALF );
+}
+
 BLIS_INLINE bool bli_is_float( num_t dt )
 {
 	return ( bool )
@@ -72,6 +78,12 @@ BLIS_INLINE bool bli_is_double( num_t dt )
 {
 	return ( bool )
 	       ( dt == BLIS_DOUBLE );
+}
+
+BLIS_INLINE bool bli_is_hcomplex( num_t dt )
+{
+	return ( bool )
+	       ( dt == BLIS_HCOMPLEX );
 }
 
 BLIS_INLINE bool bli_is_scomplex( num_t dt )
@@ -101,15 +113,24 @@ BLIS_INLINE bool bli_is_int( num_t dt )
 BLIS_INLINE bool bli_is_real( num_t dt )
 {
 	return ( bool )
-	       ( bli_is_float( dt ) ||
+	       ( bli_is_half( dt ) ||
+					bli_is_float( dt ) ||
 	                   bli_is_double( dt ) );
 }
 
 BLIS_INLINE bool bli_is_complex( num_t dt )
 {
 	return ( bool )
-	       ( bli_is_scomplex( dt ) ||
+	       (bli_is_hcomplex( dt ) ||
+		            bli_is_scomplex( dt ) ||
 	                   bli_is_dcomplex( dt ) );
+}
+
+BLIS_INLINE bool bli_is_half_prec( num_t dt )
+{
+	return ( bool )
+	       ( bli_is_half( dt ) ||
+					   bli_is_hcomplex( dt ) );
 }
 
 BLIS_INLINE bool bli_is_single_prec( num_t dt )
@@ -150,6 +171,12 @@ BLIS_INLINE prec_t bli_dt_prec( num_t dt )
 	       ( dt & BLIS_PRECISION_BIT );
 }
 
+BLIS_INLINE bool bli_dt_prec_is_half( num_t dt )
+{
+	return ( bool )
+	       ( ( dt & BLIS_PRECISION_BIT ) == BLIS_HALF_PREC );
+}
+
 BLIS_INLINE bool bli_dt_prec_is_single( num_t dt )
 {
 	return ( bool )
@@ -174,16 +201,25 @@ BLIS_INLINE num_t bli_dt_proj_to_complex( num_t dt )
 	       ( dt | BLIS_BITVAL_COMPLEX );
 }
 
+BLIS_INLINE num_t bli_dt_proj_to_half_prec( num_t dt )
+{
+    return ( num_t )
+           ( dt & ~BLIS_BITVAL_SINGLE_PREC 
+                & ~BLIS_BITVAL_DOUBLE_PREC );
+}
+
 BLIS_INLINE num_t bli_dt_proj_to_single_prec( num_t dt )
 {
 	return ( num_t )
-	       ( dt & ~BLIS_BITVAL_DOUBLE_PREC );
+	       ( ( dt & ~BLIS_BITVAL_DOUBLE_PREC )
+				  | BLIS_BITVAL_SINGLE_PREC );
 }
 
 BLIS_INLINE num_t bli_dt_proj_to_double_prec( num_t dt )
 {
 	return ( num_t )
-	       ( dt | BLIS_BITVAL_DOUBLE_PREC );
+	       ( ( dt & ~BLIS_BITVAL_SINGLE_PREC )
+				  | BLIS_BITVAL_DOUBLE_PREC );
 }
 
 

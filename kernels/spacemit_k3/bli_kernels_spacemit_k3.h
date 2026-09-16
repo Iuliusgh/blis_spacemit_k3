@@ -32,53 +32,5 @@
 
 */
 
-#ifndef BLIS_GENTDEF_MACRO_DEFS_H
-#define BLIS_GENTDEF_MACRO_DEFS_H
-
-//
-// -- MACROS TO INSERT TYPEDEF-GENERATING MACROS -------------------------------
-//
-
-
-// -- function typedef macro (both typed and void) --
-
-#define INSERT_GENTDEF( opname ) \
-\
-GENTDEF( _Float16, h, opname, _ft ) \
-GENTDEF( float,    s, opname, _ft ) \
-GENTDEF( double,   d, opname, _ft ) \
-GENTDEF( hcomplex, y, opname, _ft ) \
-GENTDEF( scomplex, c, opname, _ft ) \
-GENTDEF( dcomplex, z, opname, _ft ) \
-\
-GENTDEF( void,     h, opname, _vft ) \
-GENTDEF( void,     s, opname, _vft ) \
-GENTDEF( void,     d, opname, _vft ) \
-GENTDEF( void,     y, opname, _vft ) \
-GENTDEF( void,     c, opname, _vft ) \
-GENTDEF( void,     z, opname, _vft ) \
-\
-GENTDEF( void,      , opname, _vft )
-
-// -- function typedef macro (both typed and void) with real projection --
-
-#define INSERT_GENTDEFR( opname ) \
-\
-GENTDEFR( _Float16, _Float16, h, h, opname, _ft ) \
-GENTDEFR( float,    float,    s, s, opname, _ft ) \
-GENTDEFR( double,   double,   d, d, opname, _ft ) \
-GENTDEFR( hcomplex, _Float16, y, h, opname, _ft ) \
-GENTDEFR( scomplex, float,    c, s, opname, _ft ) \
-GENTDEFR( dcomplex, double,   z, d, opname, _ft ) \
-\
-GENTDEFR( void,     void,     h, h, opname, _vft ) \
-GENTDEFR( void,     void,     s, s, opname, _vft ) \
-GENTDEFR( void,     void,     d, d, opname, _vft ) \
-GENTDEFR( void,     void,     y, h, opname, _vft ) \
-GENTDEFR( void,     void,     c, s, opname, _vft ) \
-GENTDEFR( void,     void,     z, d, opname, _vft ) \
-\
-GENTDEFR( void,     void,      ,  , opname, _vft )
-
-
-#endif
+PACKM_KER_PROT( float, s, packm_spacemit_k3_8x8 )
+GEMM_UKR_PROT( float, s, gemm_spacemit_k3_8x8 )

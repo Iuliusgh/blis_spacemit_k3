@@ -115,6 +115,50 @@ void PASTEMAC(chv,opname) \
 	   may involve a demotion from the complex to real domain. */ \
 	bli_tcopys( chvr,chv, pvals[ val_i ], *v_cast ); \
 }
+/* Helper implementation of lamch for half-precision */
+BLIS_INLINE _Float16 bli_hlamch( char* cmach, dim_t dummy )
+{
+    char c = *cmach;
 
+    switch ( c )
+    {
+        /* Epsilon / Precision */
+        case 'E': case 'e':
+        case 'P': case 'p':
+            return 0.0009765625f16; /* 2^-10 */
+
+        /* Safe minimum / Underflow threshold */
+        case 'S': case 's':
+        case 'U': case 'u':
+            return 0.00006103515625f16; /* 2^-14 */
+
+        /* Base */
+        case 'B': case 'b':
+            return 2.0f16;
+
+        /* Number of digits in mantissa */
+        case 'N': case 'n':
+            return 11.0f16;
+
+        /* Rounding mode */
+        case 'R': case 'r':
+            return 1.0f16;
+
+        /* Minimum exponent */
+        case 'M': case 'm':
+            return -14.0f16;
+
+        /* Largest exponent */
+        case 'L': case 'l':
+            return 15.0f16;
+
+        /* Overflow threshold */
+        case 'O': case 'o':
+            return 65504.0f16;
+
+        default:
+            return 0.0f16;
+    }
+}
 INSERT_GENTFUNCR_BASIC( machval, lamch )
 

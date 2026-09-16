@@ -52,68 +52,113 @@
 #undef  INSERT_PROTMAC_BASIC
 #define INSERT_PROTMAC_BASIC( protmac, kername ) \
 \
+protmac( half,     h, kername ) \
 protmac( float,    s, kername ) \
 protmac( double,   d, kername ) \
+protmac( hcomplex, y, kername ) \
 protmac( scomplex, c, kername ) \
 protmac( dcomplex, z, kername )
 
 #undef  INSERT_PROTMAC_BASIC_CO
 #define INSERT_PROTMAC_BASIC_CO( protmac, kername ) \
 \
+protmac( hcomplex, y, kername ) \
 protmac( scomplex, c, kername ) \
 protmac( dcomplex, z, kername )
 
 #undef  INSERT_PROTMAC_MIX_RO
 #define INSERT_PROTMAC_MIX_RO( protmac, kername ) \
 \
+protmac( half,   half,   h, h, kername ) \
+protmac( float,  half,   s, h, kername ) \
+protmac( double, half,   d, h, kername ) \
+protmac( half,   float,  h, s, kername ) \
 protmac( float,  float,  s, s, kername ) \
 protmac( double, float,  d, s, kername ) \
+protmac( half,   double, h, d, kername ) \
 protmac( float,  double, s, d, kername ) \
-protmac( double, double, d, d, kername )
+protmac( double, double, d, d, kername ) 
 
 #undef  INSERT_PROTMAC_MIX_CO
 #define INSERT_PROTMAC_MIX_CO( protmac, kername ) \
 \
-protmac( scomplex, scomplex, c, c, kername ) \
-protmac( dcomplex, scomplex, z, c, kername ) \
-protmac( scomplex, dcomplex, c, z, kername ) \
-protmac( dcomplex, dcomplex, z, z, kername )
+protmac( hcomplex, hcomplex, y,  y,  kername ) \
+protmac( hcomplex, scomplex, y,  c,  kername ) \
+protmac( hcomplex, dcomplex, y,  z,  kername ) \
+protmac( scomplex, hcomplex, c,  y,  kername ) \
+protmac( scomplex, scomplex, c,  c,  kername ) \
+protmac( scomplex, dcomplex, c,  z,  kername ) \
+protmac( dcomplex, hcomplex, z,  y,  kername ) \
+protmac( dcomplex, scomplex, z,  c,  kername ) \
+protmac( dcomplex, dcomplex, z,  z,  kername ) 
 
 #undef  INSERT_PROTMAC_MIX_P
 #define INSERT_PROTMAC_MIX_P( protmac, kername ) \
 \
-protmac( float,    float,    s, s, kername ) \
-protmac( double,   float,    d, s, kername ) \
-protmac( float,    double,   s, d, kername ) \
-protmac( double,   double,   d, d, kername ) \
+protmac( half,   half,   h, h, kername ) \
+protmac( float,  half,   s, h, kername ) \
+protmac( double, half,   d, h, kername ) \
+protmac( half,   float,  h, s, kername ) \
+protmac( float,  float,  s, s, kername ) \
+protmac( double, float,  d, s, kername ) \
+protmac( half,   double, h, d, kername ) \
+protmac( float,  double, s, d, kername ) \
+protmac( double, double, d, d, kername ) \
 \
-protmac( scomplex, scomplex, c, c, kername ) \
-protmac( dcomplex, scomplex, z, c, kername ) \
-protmac( scomplex, dcomplex, c, z, kername ) \
-protmac( dcomplex, dcomplex, z, z, kername )
+protmac( hcomplex, hcomplex, y,  y,  kername ) \
+protmac( hcomplex, scomplex, y,  c,  kername ) \
+protmac( hcomplex, dcomplex, y,  z,  kername ) \
+protmac( scomplex, hcomplex, c,  y,  kername ) \
+protmac( scomplex, scomplex, c,  c,  kername ) \
+protmac( scomplex, dcomplex, c,  z,  kername ) \
+protmac( dcomplex, hcomplex, z,  y,  kername ) \
+protmac( dcomplex, scomplex, z,  c,  kername ) \
+protmac( dcomplex, dcomplex, z,  z,  kername ) 
 
 #undef  INSERT_PROTMAC_MIX_DP
 #define INSERT_PROTMAC_MIX_DP( protmac, kername ) \
 \
-protmac( float,    float,    s, s, kername ) \
-protmac( double,   float,    d, s, kername ) \
-protmac( scomplex, float,    c, s, kername ) \
-protmac( dcomplex, float,    z, s, kername ) \
+protmac( half,     half,    h,  h,   kername ) \
+protmac( float,    half,    s,  h,   kername ) \
+protmac( double,   half,    d,  h,   kername ) \
+protmac( hcomplex, half,    y,  h,   kername ) \
+protmac( scomplex, half,    c,  h,   kername ) \
+protmac( dcomplex, half,    z,  h,   kername ) \
 \
-protmac( float,    double,   s, d, kername ) \
-protmac( double,   double,   d, d, kername ) \
-protmac( scomplex, double,   c, d, kername ) \
-protmac( dcomplex, double,   z, d, kername ) \
+protmac( half,     float,    h,  s,  kername ) \
+protmac( float,    float,    s,  s,  kername ) \
+protmac( double,   float,    d,  s,  kername ) \
+protmac( hcomplex, float,    y,  s,  kername ) \
+protmac( scomplex, float,    c,  s,  kername ) \
+protmac( dcomplex, float,    z,  s,  kername ) \
 \
-protmac( float,    scomplex, s, c, kername ) \
-protmac( double,   scomplex, d, c, kername ) \
-protmac( scomplex, scomplex, c, c, kername ) \
-protmac( dcomplex, scomplex, z, c, kername ) \
+protmac( half,     double,   h,  d,  kername ) \
+protmac( float,    double,   s,  d,  kername ) \
+protmac( double,   double,   d,  d,  kername ) \
+protmac( hcomplex, double,   y,  d,  kername ) \
+protmac( scomplex, double,   c,  d,  kername ) \
+protmac( dcomplex, double,   z,  d,  kername ) \
 \
-protmac( float,    dcomplex, s, z, kername ) \
-protmac( double,   dcomplex, d, z, kername ) \
-protmac( scomplex, dcomplex, c, z, kername ) \
-protmac( dcomplex, dcomplex, z, z, kername )
+protmac( half,     hcomplex, h,  y,  kername ) \
+protmac( float,    hcomplex, s,  y,  kername ) \
+protmac( double,   hcomplex, d,  y,  kername ) \
+protmac( hcomplex, hcomplex, y,  y,  kername ) \
+protmac( scomplex, hcomplex, c,  y,  kername ) \
+protmac( dcomplex, hcomplex, z,  y,  kername ) \
+\
+protmac( half,     scomplex, h,  c,  kername ) \
+protmac( float,    scomplex, s,  c,  kername ) \
+protmac( double,   scomplex, d,  c,  kername ) \
+protmac( hcomplex, scomplex, y,  c,  kername ) \
+protmac( scomplex, scomplex, c,  c,  kername ) \
+protmac( dcomplex, scomplex, z,  c,  kername ) \
+\
+protmac( half,     dcomplex, h,  z,  kername ) \
+protmac( float,    dcomplex, s,  z,  kername ) \
+protmac( double,   dcomplex, d,  z,  kername ) \
+protmac( hcomplex, dcomplex, y,  z,  kername ) \
+protmac( scomplex, dcomplex, c,  z,  kername ) \
+protmac( dcomplex, dcomplex, z,  z,  kername )
 
 
 // -- Level-3 native micro-kernel prototype redefinitions ----------------------
@@ -269,76 +314,92 @@ INSERT_PROTMAC_BASIC( XPBYV_KER_PROT,    xpbyv_ker_name )
 
 #define gen_func_init_ro( func_p, opname ) \
 do { \
-	bli_func_init( func_p, PASTEMAC(s,opname), PASTEMAC(d,opname), \
-	                       NULL,               NULL ); \
+	bli_func_init( func_p, PASTEMAC(h,opname), PASTEMAC(s,opname), PASTEMAC(d,opname), \
+						   NULL,                  NULL,               NULL ); \
 } while (0)
 
 #define gen_func_init_co( func_p, opname ) \
 do { \
-	bli_func_init( func_p, NULL,               NULL, \
-	                       PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
+	bli_func_init( func_p, NULL,                NULL,               NULL, \
+	                       PASTEMAC(y,opname),  PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
 } while (0)
 
 #define gen_func_init_mix_co( func_p, opname ) \
 do { \
-	bli_func2_init( func_p, NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        PASTEMAC(c,c,opname), PASTEMAC(c,z,opname), \
-	                        NULL,                  NULL, \
-	                        PASTEMAC(z,c,opname), PASTEMAC(z,z,opname) ); \
+	bli_func2_init( func_p, NULL,                  NULL,                  NULL, \
+	                        NULL,                  NULL,                  NULL, \
+							NULL,                  NULL,                  NULL, \
+	                        NULL,                  NULL,                  NULL, \
+	                        NULL,                  NULL,                  NULL, \
+	                        NULL,                  NULL,                  NULL, \
+							NULL,                  NULL,                  NULL, \
+	                        PASTEMAC(y,y,opname),  PASTEMAC(y,c,opname),  PASTEMAC(y,z,opname), \
+							NULL,                  NULL,                  NULL, \
+	                        PASTEMAC(c,y,opname),  PASTEMAC(c,c,opname),  PASTEMAC(c,z,opname), \
+	                        NULL,                  NULL,                  NULL, \
+	                        PASTEMAC(z,y,opname),  PASTEMAC(z,c,opname),  PASTEMAC(z,z,opname) ); \
 } while (0)
 
 #define gen_func_init( func_p, opname ) \
 do { \
-	bli_func_init( func_p, PASTEMAC(s,opname), PASTEMAC(d,opname), \
-	                       PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
+	bli_func_init( func_p, PASTEMAC(h,opname),  PASTEMAC(s,opname), PASTEMAC(d,opname), \
+	                       PASTEMAC(y,opname),  PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
 } while (0)
 
 #define gen_func_init_ro_mix_p( func_p, opname ) \
 do { \
-	bli_func2_init( func_p, PASTEMAC(s,s,opname), PASTEMAC(s,d,opname), \
-	                        NULL,                  NULL, \
-	                        PASTEMAC(d,s,opname), PASTEMAC(d,d,opname), \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL ); \
+	bli_func2_init( func_p, PASTEMAC(h,h,opname), PASTEMAC(h,s,opname), PASTEMAC(h,d,opname), \
+	                        NULL,                 NULL,                 NULL, \
+							PASTEMAC(s,h,opname), PASTEMAC(s,s,opname), PASTEMAC(s,d,opname), \
+	                        NULL,                 NULL,                 NULL, \
+	                        PASTEMAC(d,h,opname), PASTEMAC(d,s,opname), PASTEMAC(d,d,opname), \
+	                        NULL,                 NULL,                 NULL, \
+	                        NULL,                 NULL,                 NULL, \
+	                        NULL,                 NULL,                 NULL, \
+							NULL,                 NULL,                 NULL, \
+	                        NULL,                 NULL,                 NULL, \
+	                        NULL,                 NULL,                 NULL, \
+	                        NULL,                 NULL,                 NULL ); \
 } while (0)
 
 #define gen_func_init_mix_p( func_p, opname ) \
 do { \
-	bli_func2_init( func_p, PASTEMAC(s,s,opname), PASTEMAC(s,d,opname), \
-	                        NULL,                  NULL, \
-	                        PASTEMAC(d,s,opname), PASTEMAC(d,d,opname), \
-	                        NULL,                  NULL, \
-	                        NULL,                  NULL, \
-	                        PASTEMAC(c,c,opname), PASTEMAC(c,z,opname), \
-	                        NULL,                  NULL, \
-	                        PASTEMAC(z,c,opname), PASTEMAC(z,z,opname) ); \
+	bli_func2_init( func_p, PASTEMAC(h,h,opname),   PASTEMAC(h,s,opname),  PASTEMAC(h,d,opname), \
+	                        NULL,                   NULL,                  NULL, \
+							PASTEMAC(s,h,opname),   PASTEMAC(s,s,opname),  PASTEMAC(s,d,opname), \
+	                        NULL,                   NULL,                  NULL, \
+	                        PASTEMAC(d,h,opname),   PASTEMAC(d,s,opname),  PASTEMAC(d,d,opname), \
+	                        NULL,                   NULL,                  NULL, \
+	                        NULL,                   NULL,                  NULL, \
+	                        PASTEMAC(y,y,opname),  PASTEMAC(y,c,opname),  PASTEMAC(y,z,opname), \
+							NULL,                   NULL,                  NULL, \
+	                        PASTEMAC(c,y,opname),  PASTEMAC(c,c,opname),  PASTEMAC(c,z,opname), \
+	                        NULL,                   NULL,                  NULL, \
+	                        PASTEMAC(z,y,opname),  PASTEMAC(z,c,opname),  PASTEMAC(z,z,opname) ); \
 } while (0)
 
 #define gen_func_init_mix_dp( func_p, opname ) \
 do { \
-	bli_func2_init( func_p, PASTEMAC(s,s,opname), PASTEMAC(s,d,opname), \
-	                        PASTEMAC(s,c,opname), PASTEMAC(s,z,opname), \
-	                        PASTEMAC(d,s,opname), PASTEMAC(d,d,opname), \
-	                        PASTEMAC(d,c,opname), PASTEMAC(d,z,opname), \
-	                        PASTEMAC(c,s,opname), PASTEMAC(c,d,opname), \
-	                        PASTEMAC(c,c,opname), PASTEMAC(c,z,opname), \
-	                        PASTEMAC(z,s,opname), PASTEMAC(z,d,opname), \
-	                        PASTEMAC(z,c,opname), PASTEMAC(z,z,opname) ); \
+	bli_func2_init( func_p, PASTEMAC(h,h,opname),   PASTEMAC(h,s,opname),  PASTEMAC(h,d,opname), \
+							PASTEMAC(h,y,opname),   PASTEMAC(h,c,opname),  PASTEMAC(h,z,opname), \
+							PASTEMAC(s,h,opname),   PASTEMAC(s,s,opname),  PASTEMAC(s,d,opname), \
+	                        PASTEMAC(s,y,opname),   PASTEMAC(s,c,opname),  PASTEMAC(s,z,opname), \
+	                        PASTEMAC(d,h,opname),   PASTEMAC(d,s,opname),  PASTEMAC(d,d,opname), \
+	                        PASTEMAC(d,y,opname),   PASTEMAC(d,c,opname),  PASTEMAC(d,z,opname), \
+	                        PASTEMAC(y,h,opname),   PASTEMAC(y,s,opname),  PASTEMAC(y,d,opname), \
+	                        PASTEMAC(y,y,opname),   PASTEMAC(y,c,opname),  PASTEMAC(y,z,opname), \
+							PASTEMAC(c,h,opname),   PASTEMAC(c,s,opname),  PASTEMAC(c,d,opname), \
+	                        PASTEMAC(c,y,opname),   PASTEMAC(c,c,opname),  PASTEMAC(c,z,opname), \
+	                        PASTEMAC(z,h,opname),   PASTEMAC(z,s,opname),  PASTEMAC(z,d,opname), \
+	                        PASTEMAC(z,y,opname),   PASTEMAC(z,c,opname),  PASTEMAC(z,z,opname) ); \
 } while (0)
 
 #define gen_sup_func_init( func0_p, func1_p, opname ) \
 do { \
-	bli_func_init( func0_p, PASTEMAC(s,opname), PASTEMAC(d,opname), \
-	                        PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
-	bli_func_init( func1_p, PASTEMAC(s,opname), PASTEMAC(d,opname), \
-	                        PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
+	bli_func_init( func0_p, PASTEMAC(h,opname),  PASTEMAC(s,opname), PASTEMAC(d,opname), \
+	                        PASTEMAC(y,opname),  PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
+	bli_func_init( func1_p, PASTEMAC(h,opname),  PASTEMAC(s,opname), PASTEMAC(d,opname), \
+	                        PASTEMAC(y,opname),  PASTEMAC(c,opname), PASTEMAC(z,opname) ); \
 } while (0)
 
 // -----------------------------------------------------------------------------
@@ -373,28 +434,28 @@ void GENBARNAME(cntx_init)
 	// bli_kernel_macro_defs.h otherwise. Configurations should also initialize the
 	// blocksizes in the context explicitly, but using the correct values here helps
 	// to prevent accidents.
-	//                                                       s              d              c              z
-	bli_blksz_init_easy( &blkszs[ BLIS_KR     ],             1,             1,             1,             1 );
-	bli_blksz_init     ( &blkszs[ BLIS_MR     ],     BLIS_MR_s,     BLIS_MR_d,     BLIS_MR_c,     BLIS_MR_z,
-	                                             BLIS_PACKMR_s, BLIS_PACKMR_d, BLIS_PACKMR_c, BLIS_PACKMR_z );
-	bli_blksz_init     ( &blkszs[ BLIS_NR     ],     BLIS_NR_s,     BLIS_NR_d,     BLIS_NR_c,     BLIS_NR_z,
-	                                             BLIS_PACKNR_s, BLIS_PACKNR_d, BLIS_PACKNR_c, BLIS_PACKNR_z );
-	bli_blksz_init_easy( &blkszs[ BLIS_MC     ],           256,           128,           128,            64 );
-	bli_blksz_init_easy( &blkszs[ BLIS_KC     ],           256,           256,           256,           256 );
-	bli_blksz_init_easy( &blkszs[ BLIS_NC     ],          4096,          4096,          4096,          4096 );
-	bli_blksz_init_easy( &blkszs[ BLIS_KR_SUP ],             1,             1,             1,             1 );
-	bli_blksz_init_easy( &blkszs[ BLIS_MR_SUP ],            16,             6,             6,             3 );
-	bli_blksz_init_easy( &blkszs[ BLIS_NR_SUP ],             8,             8,             4,             4 );
-	bli_blksz_init_easy( &blkszs[ BLIS_MC_SUP ],           256,           128,           128,            64 );
-	bli_blksz_init_easy( &blkszs[ BLIS_KC_SUP ],           256,           256,           256,           256 );
-	bli_blksz_init_easy( &blkszs[ BLIS_NC_SUP ],          4096,          4096,          4096,          4096 );
-	bli_blksz_init_easy( &blkszs[ BLIS_M2     ],          1000,          1000,          1000,          1000 );
-	bli_blksz_init_easy( &blkszs[ BLIS_N2     ],          1000,          1000,          1000,          1000 );
-	bli_blksz_init_easy( &blkszs[ BLIS_AF     ],             8,             8,             8,             8 );
-	bli_blksz_init_easy( &blkszs[ BLIS_DF     ],             6,             6,             6,             6 );
-	bli_blksz_init_easy( &blkszs[ BLIS_XF     ],             4,             4,             4,             4 );
-	bli_blksz_init_easy( &blkszs[ BLIS_BBM    ],    BLIS_BBM_s,    BLIS_BBM_d,    BLIS_BBM_c,    BLIS_BBM_z );
-	bli_blksz_init_easy( &blkszs[ BLIS_BBN    ],    BLIS_BBN_s,    BLIS_BBN_d,    BLIS_BBN_c,    BLIS_BBN_z );
+	//                                          h              s              d              y               c              z
+	bli_blksz_init_easy( &blkszs[ BLIS_KR     ],1,             1,             1,             1,              1,             1             );
+	bli_blksz_init     ( &blkszs[ BLIS_MR     ],BLIS_MR_h,     BLIS_MR_s,     BLIS_MR_d,     BLIS_MR_y,      BLIS_MR_c,     BLIS_MR_z,
+	                                            BLIS_PACKMR_h, BLIS_PACKMR_s, BLIS_PACKMR_d, BLIS_PACKMR_y,  BLIS_PACKMR_c, BLIS_PACKMR_z );
+	bli_blksz_init     ( &blkszs[ BLIS_NR     ],BLIS_NR_h,     BLIS_NR_s,     BLIS_NR_d,     BLIS_NR_y,      BLIS_NR_c,     BLIS_NR_z,
+	                                            BLIS_PACKNR_h, BLIS_PACKNR_s, BLIS_PACKNR_d, BLIS_PACKNR_y,  BLIS_PACKNR_c, BLIS_PACKNR_z );
+	bli_blksz_init_easy( &blkszs[ BLIS_MC     ],512,           256,           128,           256,            128,           64            );
+	bli_blksz_init_easy( &blkszs[ BLIS_KC     ],256,           256,           256,           256,            256,           256           );
+	bli_blksz_init_easy( &blkszs[ BLIS_NC     ],4096,          4096,          4096,          4096,           4096,          4096          );
+	bli_blksz_init_easy( &blkszs[ BLIS_KR_SUP ],1,             1,             1,             1,              1,             1             );
+	bli_blksz_init_easy( &blkszs[ BLIS_MR_SUP ],32,            16,            6,             12,              6,             3            );
+	bli_blksz_init_easy( &blkszs[ BLIS_NR_SUP ],16,            8,             8,             8,              4,             4             );
+	bli_blksz_init_easy( &blkszs[ BLIS_MC_SUP ],512,           256,           128,           256,            128,           64            );
+	bli_blksz_init_easy( &blkszs[ BLIS_KC_SUP ],256,           256,           256,           256,            256,           256           );
+	bli_blksz_init_easy( &blkszs[ BLIS_NC_SUP ],4096,          4096,          4096,          4096,           4096,          4096          );
+	bli_blksz_init_easy( &blkszs[ BLIS_M2     ],1000,          1000,          1000,          1000,           1000,          1000          );
+	bli_blksz_init_easy( &blkszs[ BLIS_N2     ],1000,          1000,          1000,          1000,           1000,          1000          );
+	bli_blksz_init_easy( &blkszs[ BLIS_AF     ],8,             8,             8,             8,              8,             8             );
+	bli_blksz_init_easy( &blkszs[ BLIS_DF     ],8,             6,             6,             8,              6,             6             );
+	bli_blksz_init_easy( &blkszs[ BLIS_XF     ],8,             4,             4,             4,              4,             4             );
+	bli_blksz_init_easy( &blkszs[ BLIS_BBM    ],BLIS_BBM_h,    BLIS_BBM_s,    BLIS_BBM_d,    BLIS_BBM_y,     BLIS_BBM_c,    BLIS_BBM_z    );
+	bli_blksz_init_easy( &blkszs[ BLIS_BBN    ],BLIS_BBN_h,    BLIS_BBN_s,    BLIS_BBN_d,    BLIS_BBN_y,     BLIS_BBN_c,    BLIS_BBN_z    );
 
 	// -- Set level-3 small/unpacked thresholds --------------------------------
 
@@ -406,10 +467,10 @@ void GENBARNAME(cntx_init)
 	// the non-sup/large code path. This "strictly less than" behavior was
 	// chosen over "less than or equal to" so that threshold values of 0 would
 	// effectively disable sup (even for matrix dimensions of 0).
-	//                                          s     d     c     z
-	bli_blksz_init_easy( &blkszs[ BLIS_MT ],    0,    0,    0,    0 );
-	bli_blksz_init_easy( &blkszs[ BLIS_NT ],    0,    0,    0,    0 );
-	bli_blksz_init_easy( &blkszs[ BLIS_KT ],    0,    0,    0,    0 );
+	//                                      h    s     d     y     c     z
+	bli_blksz_init_easy( &blkszs[ BLIS_MT ],0,   0,    0,    0,    0,    0 );
+	bli_blksz_init_easy( &blkszs[ BLIS_NT ],0,   0,    0,    0,    0,    0 );
+	bli_blksz_init_easy( &blkszs[ BLIS_KT ],0,   0,    0,    0,    0,    0 );
 
 	// Initialize the context with the default blocksize objects and their
 	// multiples.
@@ -459,12 +520,12 @@ void GENBARNAME(cntx_init)
 	gen_func_init_ro( &funcs[ bli_ker_idx( BLIS_GEMMTRSM1M_L_UKR ) ], gemmtrsm1m_l_ukr_name );
 	gen_func_init_ro( &funcs[ bli_ker_idx( BLIS_GEMMTRSM1M_U_UKR ) ], gemmtrsm1m_u_ukr_name );
 
-	//                                                           s      d      c      z
-	bli_mbool_init( &mbools[ BLIS_GEMM_UKR_ROW_PREF ],        TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMTRSM_L_UKR_ROW_PREF ], FALSE, FALSE, FALSE, FALSE );
-	bli_mbool_init( &mbools[ BLIS_GEMMTRSM_U_UKR_ROW_PREF ], FALSE, FALSE, FALSE, FALSE );
-	bli_mbool_init( &mbools[ BLIS_TRSM_L_UKR_ROW_PREF ],     FALSE, FALSE, FALSE, FALSE );
-	bli_mbool_init( &mbools[ BLIS_TRSM_U_UKR_ROW_PREF ],     FALSE, FALSE, FALSE, FALSE );
+	//                                                           h     s      d       y      c      z
+	bli_mbool_init( &mbools[ BLIS_GEMM_UKR_ROW_PREF ],        TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMTRSM_L_UKR_ROW_PREF ], FALSE, FALSE, FALSE, FALSE, FALSE, FALSE );
+	bli_mbool_init( &mbools[ BLIS_GEMMTRSM_U_UKR_ROW_PREF ], FALSE, FALSE, FALSE, FALSE, FALSE, FALSE );
+	bli_mbool_init( &mbools[ BLIS_TRSM_L_UKR_ROW_PREF ],     FALSE, FALSE, FALSE, FALSE, FALSE, FALSE );
+	bli_mbool_init( &mbools[ BLIS_TRSM_U_UKR_ROW_PREF ],     FALSE, FALSE, FALSE, FALSE, FALSE, FALSE );
 
 
 	// -- Set level-3 small/unpacked micro-kernels and preferences -------------
@@ -485,17 +546,17 @@ void GENBARNAME(cntx_init)
 
 
 	// Set the l3 sup ukernel storage preferences.
-	//                                                            s      d      c      z
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RRR_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RRC_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RCR_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RCC_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CRR_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CRC_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CCR_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CCC_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
+	//                                                            h     s      d     c     c      z
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RRR_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RRC_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RCR_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_RCC_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CRR_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CRC_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CCR_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_CCC_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
 
-	bli_mbool_init( &mbools[ BLIS_GEMMSUP_XXX_UKR_ROW_PREF ],  TRUE,  TRUE,  TRUE,  TRUE );
+	bli_mbool_init( &mbools[ BLIS_GEMMSUP_XXX_UKR_ROW_PREF ],  TRUE, TRUE,  TRUE, TRUE, TRUE,  TRUE );
 
 
 	// -- Set level-1f kernels -------------------------------------------------

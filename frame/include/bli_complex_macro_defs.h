@@ -39,7 +39,8 @@
 
 // -- Real and imaginary accessor macros --
 
-
+#define bli_hreal( x )  ( x )
+#define bli_himag( x )  ( 0.0f16 )
 #define bli_sreal( x )  ( x )
 #define bli_simag( x )  ( 0.0F )
 #define bli_dreal( x )  ( x )
@@ -83,6 +84,26 @@ struct bli_complex_wrapper
 		return *this;
 	}
 };
+
+inline bli_complex_wrapper<_Float16,false> bli_yreal( std::complex<_Float16>& x )
+{
+	return x;
+}
+
+inline float bli_yreal( const std::complex<_Float16>& x )
+{
+	return x.real();
+}
+
+inline bli_complex_wrapper<_Float16,true> bli_yimag( std::complex<_Float16>& x )
+{
+	return x;
+}
+
+inline _Float16 bli_yimag( const std::complex<_Float16>& x )
+{
+	return x.imag();
+}
 
 inline bli_complex_wrapper<float,false> bli_creal( std::complex<float>& x )
 {
@@ -132,6 +153,8 @@ extern "C"
 #elif !defined(BLIS_ENABLE_C99_COMPLEX)
 
 
+#define bli_yreal( x )  ( (x).real )
+#define bli_yimag( x )  ( (x).imag )
 #define bli_creal( x )  ( (x).real )
 #define bli_cimag( x )  ( (x).imag )
 #define bli_zreal( x )  ( (x).real )
@@ -143,6 +166,8 @@ extern "C"
 // Note that these definitions probably don't work because of constructs
 // like `bli_zreal( x ) = yr`.
 
+#define bli_yreal( x )  ( (_Float16) crealf( (float) x) )
+#define bli_yimag( x )  ( (_Float16) cimagf( (float) x) )
 #define bli_creal( x )  ( crealf(x) )
 #define bli_cimag( x )  ( cimagf(x) )
 #define bli_zreal( x )  ( creal(x) )

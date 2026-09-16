@@ -192,8 +192,12 @@ void PASTEMAC(cha,chp,opname,arch,suf) \
 	for ( dim_t d = 0; d < cdim_bcast; ++d ) \
 		PACKM_SET_RO( chp_r, one, mnk ); \
 }
-
-GENTFUNC2R( scomplex, float,  c, s, scomplex, float,  c, s, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
-GENTFUNC2R( scomplex, float,  c, s, dcomplex, double, z, d, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
-GENTFUNC2R( dcomplex, double, z, d, scomplex, float,  c, s, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
-GENTFUNC2R( dcomplex, double, z, d, dcomplex, double, z, d, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( hcomplex, _Float16, y, h, hcomplex, _Float16, y, h, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( hcomplex, _Float16, y, h, scomplex, float,    c, s, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( hcomplex, _Float16, y, h, dcomplex, double,   z, d, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( scomplex, float,    c, s, hcomplex, _Float16, y, h, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( scomplex, float,    c, s, scomplex, float,    c, s, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( scomplex, float,    c, s, dcomplex, double,   z, d, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( dcomplex, double,   z, d, hcomplex, _Float16, y, h, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( dcomplex, double,   z, d, scomplex, float,    c, s, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )
+GENTFUNC2R( dcomplex, double,   z, d, dcomplex, double,   z, d, packm_diag_ro, BLIS_CNAME_INFIX, BLIS_REF_SUFFIX )

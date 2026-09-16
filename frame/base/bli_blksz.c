@@ -36,8 +36,10 @@
 
 blksz_t* bli_blksz_create_ed
      (
+	   dim_t b_h, dim_t be_h,
        dim_t b_s, dim_t be_s,
        dim_t b_d, dim_t be_d,
+	   dim_t b_y, dim_t be_y,
        dim_t b_c, dim_t be_c,
        dim_t b_z, dim_t be_z
      )
@@ -49,8 +51,10 @@ blksz_t* bli_blksz_create_ed
 	bli_blksz_init_ed
 	(
 	  b,
+	  b_h, be_h,
 	  b_s, be_s,
 	  b_d, be_d,
+	  b_y, be_y, 
 	  b_c, be_c,
 	  b_z, be_z
 	);
@@ -60,8 +64,8 @@ blksz_t* bli_blksz_create_ed
 
 blksz_t* bli_blksz_create
      (
-       dim_t b_s,  dim_t b_d,  dim_t b_c,  dim_t b_z,
-       dim_t be_s, dim_t be_d, dim_t be_c, dim_t be_z
+       dim_t b_h,  dim_t b_s,  dim_t b_d,  dim_t b_y,  dim_t b_c,  dim_t b_z,
+       dim_t be_h, dim_t be_s, dim_t be_d, dim_t be_y, dim_t be_c, dim_t be_z
      )
 {
 	err_t r_val;
@@ -71,8 +75,8 @@ blksz_t* bli_blksz_create
 	bli_blksz_init
 	(
 	  b,
-	  b_s,  b_d,  b_c,  b_z,
-	  be_s, be_d, be_c, be_z
+	  b_h,  b_s,  b_d,  b_y,  b_c,  b_z,
+	  be_h, be_s, be_d, be_y, be_c, be_z
 	);
 
 	return b;
@@ -81,19 +85,25 @@ blksz_t* bli_blksz_create
 void bli_blksz_init_ed
      (
        blksz_t* b,
+	   dim_t b_h, dim_t be_h,
        dim_t b_s, dim_t be_s,
        dim_t b_d, dim_t be_d,
-       dim_t b_c, dim_t be_c,
+       dim_t b_y, dim_t be_y,  
+	   dim_t b_c, dim_t be_c,
        dim_t b_z, dim_t be_z
      )
 {
+	b->v[BLIS_HALF]     = b_h;
 	b->v[BLIS_FLOAT]    = b_s;
 	b->v[BLIS_DOUBLE]   = b_d;
+	b->v[BLIS_HCOMPLEX] = b_y;
 	b->v[BLIS_SCOMPLEX] = b_c;
 	b->v[BLIS_DCOMPLEX] = b_z;
 
+	b->e[BLIS_HALF]     = be_h;
 	b->e[BLIS_FLOAT]    = be_s;
 	b->e[BLIS_DOUBLE]   = be_d;
+	b->e[BLIS_HCOMPLEX] = be_y;
 	b->e[BLIS_SCOMPLEX] = be_c;
 	b->e[BLIS_DCOMPLEX] = be_z;
 }
@@ -101,17 +111,21 @@ void bli_blksz_init_ed
 void bli_blksz_init
      (
        blksz_t* b,
-       dim_t b_s,  dim_t b_d,  dim_t b_c,  dim_t b_z,
-       dim_t be_s, dim_t be_d, dim_t be_c, dim_t be_z
+       dim_t b_h,  dim_t b_s,  dim_t b_d,  dim_t b_y,  dim_t b_c,  dim_t b_z,
+       dim_t be_h, dim_t be_s, dim_t be_d, dim_t be_y, dim_t be_c, dim_t be_z
      )
 {
+	b->v[BLIS_HALF]     = b_h;
 	b->v[BLIS_FLOAT]    = b_s;
 	b->v[BLIS_DOUBLE]   = b_d;
+	b->v[BLIS_HCOMPLEX] = b_y;
 	b->v[BLIS_SCOMPLEX] = b_c;
 	b->v[BLIS_DCOMPLEX] = b_z;
 
+	b->e[BLIS_HALF]    = be_h;
 	b->e[BLIS_FLOAT]    = be_s;
 	b->e[BLIS_DOUBLE]   = be_d;
+	b->e[BLIS_HCOMPLEX] = be_y;
 	b->e[BLIS_SCOMPLEX] = be_c;
 	b->e[BLIS_DCOMPLEX] = be_z;
 }
@@ -119,11 +133,13 @@ void bli_blksz_init
 void bli_blksz_init_easy
      (
        blksz_t* b,
-       dim_t b_s,  dim_t b_d,  dim_t b_c,  dim_t b_z
+       dim_t b_h, dim_t b_s, dim_t b_d, dim_t b_y, dim_t b_c, dim_t b_z
      )
 {
+	b->v[BLIS_HALF]     = b->e[BLIS_HALF]     = b_h;
 	b->v[BLIS_FLOAT]    = b->e[BLIS_FLOAT]    = b_s;
 	b->v[BLIS_DOUBLE]   = b->e[BLIS_DOUBLE]   = b_d;
+	b->v[BLIS_HCOMPLEX] = b->e[BLIS_HCOMPLEX] = b_y;
 	b->v[BLIS_SCOMPLEX] = b->e[BLIS_SCOMPLEX] = b_c;
 	b->v[BLIS_DCOMPLEX] = b->e[BLIS_DCOMPLEX] = b_z;
 }

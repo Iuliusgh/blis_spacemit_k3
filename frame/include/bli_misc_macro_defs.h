@@ -124,67 +124,101 @@ BLIS_INLINE void bli_toggle_bool( bool* b )
 
 // return datatype for datatype char
 
+#define bli_htype ( BLIS_HALF    )
 #define bli_stype ( BLIS_FLOAT    )
 #define bli_dtype ( BLIS_DOUBLE   )
+#define bli_ytype ( BLIS_HCOMPLEX )
 #define bli_ctype ( BLIS_SCOMPLEX )
 #define bli_ztype ( BLIS_DCOMPLEX )
 
 // return C type for datatype char
 
+#define bli_hctype _Float16
 #define bli_sctype  float
 #define bli_dctype  double
+#define bli_yctype  hcomplex
 #define bli_cctype  scomplex
 #define bli_zctype  dcomplex
 
 // return C type for domain and precision chars
 
+#define bli_rhctype _Float16
 #define bli_rsctype float
 #define bli_rdctype double
+#define bli_ysctype hcomplex
 #define bli_csctype scomplex
 #define bli_cdctype dcomplex
 
 // return real proj of C type for datatype char
 
+#define bli_hctyper  _Float16
 #define bli_sctyper  float
 #define bli_dctyper  double
+#define bli_yctyper  _Float16
 #define bli_cctyper  float
 #define bli_zctyper  double
 
 // return precision component of dt char
 
+#define bli_hprec  h
 #define bli_sprec  s
 #define bli_dprec  d
+#define bli_yprec  h
 #define bli_cprec  s
 #define bli_zprec  d
 #define bli_iprec  i
 
 // return domain component of dt char
 
+#define bli_hdom   r
 #define bli_sdom   r
 #define bli_ddom   r
+#define bli_ydom   c
 #define bli_cdom   c
 #define bli_zdom   c
 #define bli_idom   r
 
 // return whether or not two types are the same
 
+#define bli_hhsame 1
+#define bli_hssame 0
+#define bli_hdsame 0
+#define bli_hysame 0
+#define bli_hcsame 0
+#define bli_hzsame 0
+
+#define bli_shsame 0
 #define bli_sssame 1
 #define bli_sdsame 0
+#define bli_sysame 0
 #define bli_scsame 0
 #define bli_szsame 0
 
+#define bli_dhsame 0
 #define bli_dssame 0
 #define bli_ddsame 1
+#define bli_dysame 0
 #define bli_dcsame 0
 #define bli_dzsame 0
 
+#define bli_yhsame 0
+#define bli_yssame 0
+#define bli_ydsame 0
+#define bli_yysame 1
+#define bli_ycsame 0
+#define bli_yzsame 0
+
+#define bli_chsame 0
 #define bli_cssame 0
 #define bli_cdsame 0
+#define bli_cysame 0
 #define bli_ccsame 1
 #define bli_czsame 0
 
 #define bli_zssame 0
+#define bli_zssame 0
 #define bli_zdsame 0
+#define bli_zysame 0
 #define bli_zcsame 0
 #define bli_zzsame 1
 
@@ -194,8 +228,10 @@ BLIS_INLINE void bli_toggle_bool( bool* b )
 // NOTE: These must remain macros due to the way they are used to initialize
 // local char arrays.
 
+#define bli_hformatspec() "%9.2e"
 #define bli_sformatspec() "%9.2e"
 #define bli_dformatspec() "%9.2e"
+#define bli_yformatspec() "%9.2e + %9.2e "
 #define bli_cformatspec() "%9.2e + %9.2e "
 #define bli_zformatspec() "%9.2e + %9.2e "
 #define bli_iformatspec() "%6d"

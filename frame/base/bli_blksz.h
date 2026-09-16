@@ -94,25 +94,33 @@ BLIS_INLINE void bli_blksz_copy_if_nonneg
 	// only copy valuse that are zero or positive (and skip copying any
 	// values that are negative).
 
-	const dim_t v_s = bli_blksz_get_def( BLIS_FLOAT,    b_src );
-	const dim_t v_d = bli_blksz_get_def( BLIS_DOUBLE,   b_src );
-	const dim_t v_c = bli_blksz_get_def( BLIS_SCOMPLEX, b_src );
-	const dim_t v_z = bli_blksz_get_def( BLIS_DCOMPLEX, b_src );
+  const dim_t v_h  = bli_blksz_get_def( BLIS_HALF,     b_src );
+	const dim_t v_s  = bli_blksz_get_def( BLIS_FLOAT,    b_src );
+	const dim_t v_d  = bli_blksz_get_def( BLIS_DOUBLE,   b_src );
+  const dim_t v_y  = bli_blksz_get_def( BLIS_HCOMPLEX, b_src );
+  const dim_t v_c  = bli_blksz_get_def( BLIS_SCOMPLEX, b_src );
+	const dim_t v_z  = bli_blksz_get_def( BLIS_DCOMPLEX, b_src );
 
-	const dim_t e_s = bli_blksz_get_max( BLIS_FLOAT,    b_src );
-	const dim_t e_d = bli_blksz_get_max( BLIS_DOUBLE,   b_src );
-	const dim_t e_c = bli_blksz_get_max( BLIS_SCOMPLEX, b_src );
-	const dim_t e_z = bli_blksz_get_max( BLIS_DCOMPLEX, b_src );
+  const dim_t e_h  = bli_blksz_get_max( BLIS_HALF,     b_src );
+	const dim_t e_s  = bli_blksz_get_max( BLIS_FLOAT,    b_src );
+	const dim_t e_d  = bli_blksz_get_max( BLIS_DOUBLE,   b_src );
+  const dim_t e_y  = bli_blksz_get_max( BLIS_HCOMPLEX, b_src );
+  const dim_t e_c  = bli_blksz_get_max( BLIS_SCOMPLEX, b_src );
+	const dim_t e_z  = bli_blksz_get_max( BLIS_DCOMPLEX, b_src );
 
-	if ( v_s >= 0 ) bli_blksz_set_def( v_s, BLIS_FLOAT,    b_dst );
-	if ( v_d >= 0 ) bli_blksz_set_def( v_d, BLIS_DOUBLE,   b_dst );
-	if ( v_c >= 0 ) bli_blksz_set_def( v_c, BLIS_SCOMPLEX, b_dst );
-	if ( v_z >= 0 ) bli_blksz_set_def( v_z, BLIS_DCOMPLEX, b_dst );
+  if ( v_h  >= 0 ) bli_blksz_set_def( v_h,  BLIS_HALF,     b_dst );
+	if ( v_s  >= 0 ) bli_blksz_set_def( v_s,  BLIS_FLOAT,    b_dst );
+	if ( v_d  >= 0 ) bli_blksz_set_def( v_d,  BLIS_DOUBLE,   b_dst );
+  if ( v_y  >= 0 ) bli_blksz_set_def( v_c,  BLIS_HCOMPLEX, b_dst );
+  if ( v_c  >= 0 ) bli_blksz_set_def( v_c,  BLIS_SCOMPLEX, b_dst );
+	if ( v_z  >= 0 ) bli_blksz_set_def( v_z,  BLIS_DCOMPLEX, b_dst );
 
-	if ( e_s >= 0 ) bli_blksz_set_max( e_s, BLIS_FLOAT,    b_dst );
-	if ( e_d >= 0 ) bli_blksz_set_max( e_d, BLIS_DOUBLE,   b_dst );
-	if ( e_c >= 0 ) bli_blksz_set_max( e_c, BLIS_SCOMPLEX, b_dst );
-	if ( e_z >= 0 ) bli_blksz_set_max( e_z, BLIS_DCOMPLEX, b_dst );
+  if ( e_h  >= 0 ) bli_blksz_set_max( e_h,  BLIS_HALF,     b_dst );
+	if ( e_s  >= 0 ) bli_blksz_set_max( e_s,  BLIS_FLOAT,    b_dst );
+	if ( e_d  >= 0 ) bli_blksz_set_max( e_d,  BLIS_DOUBLE,   b_dst );
+  if ( e_y  >= 0 ) bli_blksz_set_max( e_c,  BLIS_HCOMPLEX, b_dst );
+  if ( e_c  >= 0 ) bli_blksz_set_max( e_c,  BLIS_SCOMPLEX, b_dst );
+	if ( e_z  >= 0 ) bli_blksz_set_max( e_z,  BLIS_DCOMPLEX, b_dst );
 }
 
 BLIS_INLINE void bli_blksz_copy_def_dt
@@ -189,23 +197,27 @@ BLIS_INLINE void bli_blksz_scale_def_max
 
 BLIS_EXPORT_BLIS blksz_t* bli_blksz_create_ed
      (
+       dim_t b_h, dim_t be_h,
        dim_t b_s, dim_t be_s,
        dim_t b_d, dim_t be_d,
+       dim_t b_y, dim_t be_y,
        dim_t b_c, dim_t be_c,
        dim_t b_z, dim_t be_z
      );
 
 BLIS_EXPORT_BLIS blksz_t* bli_blksz_create
      (
-       dim_t b_s,  dim_t b_d,  dim_t b_c,  dim_t b_z,
-       dim_t be_s, dim_t be_d, dim_t be_c, dim_t be_z
+       dim_t b_h,  dim_t b_s,  dim_t b_d,  dim_t b_y,  dim_t b_c,  dim_t b_z,
+       dim_t be_h, dim_t be_s, dim_t be_d, dim_t be_y, dim_t be_c, dim_t be_z
      );
 
 BLIS_EXPORT_BLIS void bli_blksz_init_ed
      (
        blksz_t* b,
+       dim_t    b_h, dim_t be_h,
        dim_t    b_s, dim_t be_s,
        dim_t    b_d, dim_t be_d,
+       dim_t    b_y, dim_t be_y,
        dim_t    b_c, dim_t be_c,
        dim_t    b_z, dim_t be_z
      );
@@ -213,14 +225,14 @@ BLIS_EXPORT_BLIS void bli_blksz_init_ed
 BLIS_EXPORT_BLIS void bli_blksz_init
      (
        blksz_t* b,
-       dim_t b_s,  dim_t b_d,  dim_t b_c,  dim_t b_z,
-       dim_t be_s, dim_t be_d, dim_t be_c, dim_t be_z
+       dim_t b_h,  dim_t b_s,  dim_t b_d,  dim_t b_y,  dim_t b_c,  dim_t b_z,
+       dim_t be_h, dim_t be_s, dim_t be_d, dim_t be_y, dim_t be_c, dim_t be_z
      );
 
 BLIS_EXPORT_BLIS void bli_blksz_init_easy
      (
        blksz_t* b,
-       dim_t b_s,  dim_t b_d,  dim_t b_c,  dim_t b_z
+       dim_t b_h, dim_t b_s, dim_t b_d, dim_t b_y, dim_t b_c, dim_t b_z
      );
 
 BLIS_EXPORT_BLIS void bli_blksz_free
