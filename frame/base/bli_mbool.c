@@ -75,7 +75,7 @@ void bli_mbool_init
        bool     b_z
      )
 {
-  bli_mbool_set_dt( b_h, BLIS_HALF,    b );
+  bli_mbool_set_dt( b_h, BLIS_HALF,     b );
 	bli_mbool_set_dt( b_s, BLIS_FLOAT,    b );
 	bli_mbool_set_dt( b_d, BLIS_DOUBLE,   b );
   bli_mbool_set_dt( b_y, BLIS_HCOMPLEX, b );

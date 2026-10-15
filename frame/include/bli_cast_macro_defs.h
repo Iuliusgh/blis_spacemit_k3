@@ -136,7 +136,7 @@ BLIS_INLINE float bli_bscast( bfloat b )
 
 BLIS_INLINE float bli_hscast( _Float16 h )
 {
-	return (float)h;
+	return ( float )h;
 }
 
 BLIS_INLINE float bli_sscast( float s )
@@ -441,8 +441,8 @@ GENTFUNC( z, d )
 #define bli_hadd( a, b )       (a) + (b)
 #define bli_hsub( a, b )       (a) - (b)
 #define bli_hneg( a )          -(a)
-#define bli_hsqrt( a )         (_Float16) sqrtf( (float) a )
-#define bli_hhypot( a, b )     (_Float16) hypotf( (float) a, (float) b)
+#define bli_hsqrt( a )         (_Float16) sqrtf( bli_hscast(a) )
+#define bli_hhypot( a, b )     (_Float16) hypotf( bli_hscast(a), bli_hscast(b))
 
 #define bli_smul( a, b )       (a) * (b)
 #define bli_sdiv( a, b )       (a) / (b)
@@ -533,10 +533,10 @@ GENTFUNC( z, d )
 #define bli_hmin( a, b )       ( bli_hlt( a, b ) ? a : b )
 #define bli_hmax( a, b )       ( bli_hgt( a, b ) ? a : b )
 //#define bli_habs( a )          ( bli_slt( a, PASTEMAC(s,zero) ) ? -(a) : a )
-#define bli_habs( a )          ( (_Float16) fabsf( (float) a ) )
+#define bli_habs( a )          ( (_Float16) fabsf(  bli_hscast(a) ) )
 #define bli_hminabs( a, b )    bli_hmin( bli_habs( a ), bli_habs( b ) )
 #define bli_hmaxabs( a, b )    bli_hmax( bli_habs( a ), bli_habs( b ) )
-#define bli_hcopysign( a, b )  ( (_Float16) copysignf( (float) a, (float) b ) ) \
+#define bli_hcopysign( a, b )  ( (_Float16) copysignf( bli_hscast(a), bli_hscast(b) ) ) \
 
 #define bli_smin( a, b )       ( bli_slt( a, b ) ? a : b )
 #define bli_smax( a, b )       ( bli_sgt( a, b ) ? a : b )
@@ -568,8 +568,8 @@ GENTFUNC( z, d )
 
 #endif
 
-#define bli_hisinf( a )        isinf( a )
-#define bli_hisnan( a )        isnan( a )
+#define bli_hisinf( a )        isinf( bli_hscast(a) )
+#define bli_hisnan( a )        isnan( bli_hscast(a) )
 
 #define bli_sisinf( a )        isinf( a )
 #define bli_sisnan( a )        isnan( a )

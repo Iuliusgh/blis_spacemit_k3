@@ -131,7 +131,7 @@ CINCFLAGS      := -I$(INC_PATH)
 CFLAGS         := $(call get-user-cflags-for,$(CONFIG_NAME))
 
 # Add local header paths to CFLAGS
-#CFLAGS         += -I$(TEST_SRC_PATH) -g
+CFLAGS         += -I$(TEST_SRC_PATH) -g
 
 #CFLAGS         += -finstrument-functions -g -O0
 # Locate the libblis library to which we will link.

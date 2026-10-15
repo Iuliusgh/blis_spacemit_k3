@@ -462,11 +462,15 @@ void bli_cntx_print( const cntx_t* cntx )
 	{
 		printf( "blksz/mult %2lu:  %13lu/%2lu %13lu/%2lu %13lu/%2lu %13lu/%2lu\n",
 		         ( unsigned long )i,
+				 ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_HALF,    i, cntx ),
+		         ( unsigned long )bli_cntx_get_bmult_dt    ( BLIS_HALF,    i, cntx ),
 		         ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_FLOAT,    i, cntx ),
 		         ( unsigned long )bli_cntx_get_bmult_dt    ( BLIS_FLOAT,    i, cntx ),
 		         ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_DOUBLE,   i, cntx ),
 		         ( unsigned long )bli_cntx_get_bmult_dt    ( BLIS_DOUBLE,   i, cntx ),
-		         ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_SCOMPLEX, i, cntx ),
+		         ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_HCOMPLEX, i, cntx ),
+		         ( unsigned long )bli_cntx_get_bmult_dt    ( BLIS_HCOMPLEX, i, cntx ),
+				 ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_SCOMPLEX, i, cntx ),
 		         ( unsigned long )bli_cntx_get_bmult_dt    ( BLIS_SCOMPLEX, i, cntx ),
 		         ( unsigned long )bli_cntx_get_blksz_def_dt( BLIS_DCOMPLEX, i, cntx ),
 		         ( unsigned long )bli_cntx_get_bmult_dt    ( BLIS_DCOMPLEX, i, cntx )
@@ -479,9 +483,11 @@ void bli_cntx_print( const cntx_t* cntx )
 
 		printf( "ukr %2lu:  %16p %16p %16p %16p\n",
 		        ( unsigned long )i,
-		        bli_func_get_dt( BLIS_FLOAT,    ukr ),
+		        bli_func_get_dt( BLIS_HALF,     ukr ),
+				bli_func_get_dt( BLIS_FLOAT,    ukr ),
 		        bli_func_get_dt( BLIS_DOUBLE,   ukr ),
-		        bli_func_get_dt( BLIS_SCOMPLEX, ukr ),
+		        bli_func_get_dt( BLIS_HCOMPLEX, ukr ),
+				bli_func_get_dt( BLIS_SCOMPLEX, ukr ),
 		        bli_func_get_dt( BLIS_DCOMPLEX, ukr )
 		      );
 	}
@@ -492,9 +498,11 @@ void bli_cntx_print( const cntx_t* cntx )
 
 		printf( "ukr pref %2lu:  %d %d %d %d\n",
 		        ( unsigned long )i,
-		        bli_mbool_get_dt( BLIS_FLOAT,    ukr_pref ),
+		        bli_mbool_get_dt( BLIS_HALF,     ukr_pref ),
+				bli_mbool_get_dt( BLIS_FLOAT,    ukr_pref ),
 		        bli_mbool_get_dt( BLIS_DOUBLE,   ukr_pref ),
-		        bli_mbool_get_dt( BLIS_SCOMPLEX, ukr_pref ),
+		        bli_mbool_get_dt( BLIS_HCOMPLEX, ukr_pref ),
+				bli_mbool_get_dt( BLIS_SCOMPLEX, ukr_pref ),
 		        bli_mbool_get_dt( BLIS_DCOMPLEX, ukr_pref )
 		      );
 	}

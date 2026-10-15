@@ -18,7 +18,7 @@ void bli_hpackm_spacemit_k3_8x8
        const cntx_t* cntx
      )
 {     
-      printf("Packing...\n lda: %ld, inca: %ld \n", lda0,inca0);
+      //printf("Using custom packing...\n");
 
       packm_spacemit_k3_8x8_asm(cdim0, k0, inca0, lda0, a , p);
       /*

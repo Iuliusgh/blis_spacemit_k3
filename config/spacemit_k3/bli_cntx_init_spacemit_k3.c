@@ -45,11 +45,11 @@ void bli_cntx_init_spacemit_k3( cntx_t* cntx )
 
 	
 	// Update the context with optimized native gemm micro-kernels.
-	bli_cntx_set_ukrs
+	bli_cntx_set_ukr2s
 	(
 		cntx,
 		// level-3
-		BLIS_GEMM_UKR,     BLIS_FLOAT,    bli_sgemm_spacemit_k3_8x8,
+		BLIS_GEMM_UKR,   BLIS_HALF,     BLIS_FLOAT,    bli_hsgemm_spacemit_k3_8x8,
 		BLIS_VA_END
 	);
 	bli_cntx_set_ukrs
@@ -66,7 +66,7 @@ void bli_cntx_init_spacemit_k3( cntx_t* cntx )
 		cntx,
 		// level-3
 		BLIS_GEMM_UKR_ROW_PREF, BLIS_HALF,       FALSE,
-		BLIS_GEMM_UKR_ROW_PREF, BLIS_FLOAT,      FALSE,
+		//BLIS_GEMM_UKR_ROW_PREF, BLIS_FLOAT,    FALSE,
 		//BLIS_GEMM_UKR_ROW_PREF, BLIS_DOUBLE,   FALSE,
 		//BLIS_GEMM_UKR_ROW_PREF, BLIS_SCOMPLEX, FALSE,
 		//BLIS_GEMM_UKR_ROW_PREF, BLIS_DCOMPLEX, FALSE,

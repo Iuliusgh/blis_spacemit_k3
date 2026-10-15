@@ -22,10 +22,10 @@
 gemm_spacemit_k3_8x8_asm:
     vsetvli t0, zero, e32, m2
     vmv.v.i v30, 0                       # reset accumulator
-    li t2, 8                             # Vmadot can compute up to 8 elements per row/col
+    li t2, 8                             # vfwmadot can compute up to 8 elements per row/col
     blt K, t2, K_tail                    # handle tail if less than 8 elements per row/col remaining
 K_loop:                            
-    vsetvli t0, zero, e16, m8             # reset all registers to zero
+    vsetvli t0, zero, e16, m8            # reset all registers to zero
     vmv.v.i v0, 0                        #0-7                   
     vmv.v.i v8, 0                        #8-15  
     vmv.v.i v16, 0                       #16-23
@@ -34,107 +34,199 @@ K_loop:
     vmv.v.i v26, 0                       #26-27 
     vmv.v.i v28, 0                       #28-29 
 ####VMADOT BLOCK 1
-    slli t0, M, 3                       # M * 8 elems from A
+    slli t0, M, 3                        # M * 8 elems from A
     vsetvli t0, t0, e16, m1              
-    vle16.v v26, (A_addr)                # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
-    slli t0, N, 3                       # N * 8 elems from B
+    vle16.v v29, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
+    slli t0, N, 3                        # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v27, (B_addr)                # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v28, v26, v27                # vmadot
-    vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v28               # accumulate
-    sub K, K, t2                        # K -= 8
-    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
-
+    vle16.v v28, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr            # move B pointer
+    vfwmadot v30, v29, v28               # vmadot
+    vsetvli t0, zero, e32, m2,           # use 32 bit elements
+    sub K, K, t2                         # K -= 8
+    blt K, t2, K_tail                    # handle tail if less than 8 elements per row/col remaining
 ####VMADOT BLOCK 2
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1               
-    vle16.v v22, (A_addr)                # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
-    slli t0, N, 3                       # N * 8 elems from B
+    vle16.v v27, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
+    slli t0, N, 3                        # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v23, (B_addr)                # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v24, v22, v23                # vmadot
+    vle16.v v26, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr               # move B pointer
+    vfwmadot v30, v27, v26                # vmadot
     vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v24               # accumulate
     sub K, K, t2                        # K -= 8
     blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
-
 ####VMADOT BLOCK 3
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1               
-    vle16.v v18, (A_addr)                # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
+    vle16.v v25, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
     slli t0, N, 3                       # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v19, (B_addr)                # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v20, v18, v19                # vmadot
+    vle16.v v24, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr               # move B pointer
+    vfwmadot v30, v25, v24                # vmadot
     vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v20               # accumulate
     sub K, K, t2                        # K -= 8
     blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
-
 ####VMADOT BLOCK 4
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1               
-    vle16.v v14, (A_addr)                # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
+    vle16.v v23, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
     slli t0, N, 3                       # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v15, (B_addr)                # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v16, v14, v15                # vmadot
+    vle16.v v22, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr               # move B pointer
+    vfwmadot v30, v23, v22                # vmadot
     vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v16               # accumulate
     sub K, K, t2                        # K -= 8
     blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
-
 ####VMADOT BLOCK 5
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1               
-    vle16.v v10, (A_addr)                # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
+    vle16.v v21, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
     slli t0, N, 3                       # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v11, (B_addr)                # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v12, v10, v11                # vmadot
+    vle16.v v20, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr               # move B pointer
+    vfwmadot v30, v21, v20                # vmadot
     vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v12               # accumulate
     sub K, K, t2                        # K -= 8
     blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
-
 ####VMADOT BLOCK 6
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1               
-    vle16.v v6, (A_addr)                 # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
+    vle16.v v19, (A_addr)                 # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
     slli t0, N, 3                       # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v7, (B_addr)                 # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v8, v6, v7                   # vmadot
+    vle16.v v18, (B_addr)                 # load source 2 fron B 
+    sh1add B_addr, t0, B_addr               # move B pointer
+    vfwmadot v30, v19, v18                   # vmadot
     vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v8                # accumulate
     sub K, K, t2                        # K -= 8
     blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
-
 ####VMADOT BLOCK 7
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1               
-    vle16.v v2, (A_addr)                 # load source 1 from A
-    add A_addr, A_addr, t0              # move A pointer
+    vle16.v v17, (A_addr)                 # load source 1 from A
+    sh1add A_addr, t0, A_addr            # move A pointer
     slli t0, N, 3                       # N * 8 elems from B
     vsetvli t0, t0, e16, m1
-    vle16.v v3, (B_addr)                 # load source 2 fron B 
-    add B_addr, B_addr, t0              # move B pointer
-    vfwmadot v4, v2, v3                   # vmadot
+    vle16.v v16, (B_addr)                 # load source 2 fron B 
+    sh1add B_addr, t0, B_addr               # move B pointer
+    vfwmadot v30, v17, v16                   # vmadot
     vsetvli t0, zero, e32, m2,          # use 32 bit elements
-    vadd.vv v30, v30, v4                # accumulate
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 8
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v15, (A_addr)               # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v14, (B_addr)               # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v15, v14              # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 9
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v13, (A_addr)               # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v12, (B_addr)               # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v13, v12              # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 10
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1  
+                 
+    vle16.v v11, (A_addr)               # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v10, (B_addr)               # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v11, v10              # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 11
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v9, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v8, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v9, v8                # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 12
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v7, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v6, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v7, v6                # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 13
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v5, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v4, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v5, v4                # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
+####VMADOT BLOCK 14
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v3, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v2, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v3, v2                # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
+    sub K, K, t2                        # K -= 8
+    blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining    
+####VMADOT BLOCK 15
+    slli t0, M, 3                       # M * 8 elems from A
+    vsetvli t0, t0, e16, m1               
+    vle16.v v1, (A_addr)                # load source 1 from A
+    sh1add A_addr, t0, A_addr           # move A pointer
+    slli t0, N, 3                       # N * 8 elems from B
+    vsetvli t0, t0, e16, m1
+    vle16.v v0, (B_addr)                # load source 2 fron B 
+    sh1add B_addr, t0, B_addr           # move B pointer
+    vfwmadot v30, v1, v0                # vmadot
+    vsetvli t0, zero, e32, m2,          # use 32 bit elements
     sub K, K, t2                        # K -= 8
     blt K, t2, K_tail                   # handle tail if less than 8 elements per row/col remaining
 ###K loop end
@@ -142,7 +234,7 @@ K_loop:
 ###Handle K smaller than 8
 K_tail:
     beqz K, Store                        # K == 0 ? Nothing left to compute  
-    vsetvli t0, zero, e16, m1,            #reset registers that are going to be used 
+    vsetvli t0, zero, e16, m1,           #reset registers that are going to be used 
     vmv.v.i v0, 0                        #mask
     vmv.v.i v1, 0                        #iota
     vmv.v.i v2, 0                        #vmadot source 1
@@ -157,20 +249,17 @@ K_tail:
 ####A remainder load
     mul t0, K, M                         # K elements * A remaining rows
     vsetvli t0, t0, e16, m1,              
-    vle16.v v4, (A_addr)                  # load source1 into vmadot result 1 temporarily
+    vle16.v v4, (A_addr)                 # load source1 into vmadot result 1 temporarily
 ####B remainder load 
     mul t0, K, N                         # K elements * B remaining columns
     vsetvli t0, t0, e16, m1,              
-    vle16.v v5, (B_addr)                  # load source2 into vmadot result 2 temporarily
+    vle16.v v5, (B_addr)                 # load source2 into vmadot result 2 temporarily
 ####Sparse A/B vmadot
     vsetvli t0, zero, e16, m1,             
     vrgather.vv v2, v4, v1, v0.t         #masked gather onto a zeroed array, result will contain active source elements separated by zeroes 
     vrgather.vv v3, v5, v1, v0.t         #same for source 2
-    vmv.v.i v4, 0                        #reset vmadot result
-    vmv.v.i v5, 0                        #reset vmadot result
-    vfwmadot v4, v2, v3                    # vmadot
+    vfwmadot v30, v2, v3                 # vmadot
     vsetvli t0, zero, e32, m2,         
-    vadd.vv v30, v30, v4                 #accumulate
 Store:
 ####Store accumulated result
     vsetvli t2, zero, e32, m2,           # zero out v22-29, will be used to load C values
@@ -198,7 +287,7 @@ Store:
 ### Store C[2][0-N]
     addi t1, t1, 1                       # row count ++
     sh2add C_addr, C_rs, C_addr          # next row  = C start address + (row stride << 2)
-    vslidedown.vi v30, v30, 8            # slide third row to front
+    vslidedown.vi v30, v30, 16           # slide third row to front
     vlse32.v v27, (C_addr), t2           # load previous content of C third row
     vfmacc.vf v30, beta, v27             # C = beta * previous C
     vsse32.v v30, (C_addr), t2           # store elements of third row
@@ -206,7 +295,7 @@ Store:
 ### Store C[3][0-N]
     addi t1, t1, 1                       # row count ++
     sh2add C_addr, C_rs, C_addr          # next row  = C start address + (row stride << 2)
-    vslidedown.vi v30, v30, 8            # slide fourth row to front
+    vslidedown.vi v30, v30, 24           # slide fourth row to front
     vlse32.v v26, (C_addr), t2           # load previous content of C fourth row
     vfmacc.vf v30, beta, v26             # C = beta * previous C
     vsse32.v v30, (C_addr), t2           # store elements of fourth row
@@ -230,14 +319,14 @@ Store:
 ### Store C[6][0-N]
     addi t1, t1, 1                       # row count++
     sh2add C_addr, C_rs, C_addr          # next row  = previous row + (row stride << 2)
-    vslidedown.vi v31, v31, 8            # slide seventh to front
+    vslidedown.vi v31, v31, 16           # slide seventh to front
     vlse32.v v23, (C_addr), t2           # load previous content of C seventh row
     vfmacc.vf v31, beta, v23             # C = beta * previous C
     vsse32.v v31, (C_addr), t2           # store elements of seventh row
     beq M, t1, End                       # M == 6? done
 ### Store C[7][0-N]
     sh2add C_addr, C_rs, C_addr          # next row  = previous row + (row stride << 2)
-    vslidedown.vi v31, v31, 8            # slide eighth to front
+    vslidedown.vi v31, v31, 24           # slide eighth to front
     vlse32.v v22, (C_addr), t2           # load previous content of C eighth row
     vfmacc.vf v31, beta, v22             # C = beta * previous C
     vsse32.v v31, (C_addr), t2           # store elements of eighth row

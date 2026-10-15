@@ -61,11 +61,14 @@ int bli_ind_init( void )
 	// The second condition means that BLIS will not bother to use an induced
 	// method if both the real and complex domain kernels are reference.
 
+	bool h_is_ref = bli_gks_cntx_ukr_is_ref( BLIS_HALF,    BLIS_GEMM_UKR, cntx );
 	bool s_is_ref = bli_gks_cntx_ukr_is_ref( BLIS_FLOAT,    BLIS_GEMM_UKR, cntx );
 	bool d_is_ref = bli_gks_cntx_ukr_is_ref( BLIS_DOUBLE,   BLIS_GEMM_UKR, cntx );
+	bool y_is_ref = bli_gks_cntx_ukr_is_ref( BLIS_HCOMPLEX, BLIS_GEMM_UKR, cntx );
 	bool c_is_ref = bli_gks_cntx_ukr_is_ref( BLIS_SCOMPLEX, BLIS_GEMM_UKR, cntx );
 	bool z_is_ref = bli_gks_cntx_ukr_is_ref( BLIS_DCOMPLEX, BLIS_GEMM_UKR, cntx );
 
+	if ( y_is_ref && !h_is_ref ) bli_ind_enable_dt( BLIS_1M, BLIS_HCOMPLEX );
 	if ( c_is_ref && !s_is_ref ) bli_ind_enable_dt( BLIS_1M, BLIS_SCOMPLEX );
 	if ( z_is_ref && !d_is_ref ) bli_ind_enable_dt( BLIS_1M, BLIS_DCOMPLEX );
 
@@ -81,18 +84,21 @@ int bli_ind_finalize( void )
 
 void bli_ind_enable( ind_t method )
 {
+	bli_ind_enable_dt( method, BLIS_HCOMPLEX );
 	bli_ind_enable_dt( method, BLIS_SCOMPLEX );
 	bli_ind_enable_dt( method, BLIS_DCOMPLEX );
 }
 
 void bli_ind_disable( ind_t method )
 {
+	bli_ind_disable_dt( method, BLIS_HCOMPLEX );
 	bli_ind_disable_dt( method, BLIS_SCOMPLEX );
 	bli_ind_disable_dt( method, BLIS_DCOMPLEX );
 }
 
 void bli_ind_disable_all( void )
 {
+	bli_ind_disable_all_dt( BLIS_HCOMPLEX );
 	bli_ind_disable_all_dt( BLIS_SCOMPLEX );
 	bli_ind_disable_all_dt( BLIS_DCOMPLEX );
 }

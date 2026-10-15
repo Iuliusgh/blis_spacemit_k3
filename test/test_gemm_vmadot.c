@@ -71,8 +71,11 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
     bli_obj_create(dt, m, n, 0, 0, &c_custom);
     bli_obj_create(dt, m, n, 0, 0, &c_generic);
 
-    bli_obj_create(dt, 1, 1, 0, 0, &alpha);
-    bli_obj_create(dt, 1, 1, 0, 0, &beta);
+    bli_obj_create( dt, 1, 1, 0, 0, &alpha );
+	bli_obj_create( dt, 1, 1, 0, 0, &beta );
+
+    //alpha = BLIS_ONE;
+    //beta  = BLIS_ZERO;
     
     // 2. Initialize inputs identically (Alpha = 1.0, Beta = 0.0)
     bli_setsc(1.0f, 0.0, &alpha); 
@@ -82,7 +85,7 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
     // Fill A and B with small random integers (-1.0 to 1.0) for easier reading
     bli_randm(&a);
     bli_randm(&b);
-
+    
     bli_setm(&BLIS_ZERO, &c_custom);
     bli_setm(&BLIS_ZERO, &c_generic);
 
@@ -104,13 +107,25 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
     inc_t cs_cust   = bli_obj_col_stride(&c_custom);
     //printf("Using rs: %ld, cs: %ld in custom gemm\n",rs_cust, cs_cust);
     
+    
+/*
+    for (dim_t i = 0; i < m; i++)
+        for (dim_t p = 0; p < k; p++)
+            buf_a[i * rs_a + p * cs_a] = (_Float16)(i * k + p + 1);
+
+    for (dim_t p = 0; p < k; p++)
+        for (dim_t j = 0; j < n; j++)
+            buf_b[p * rs_b + j * cs_b] = (_Float16)(j * k + p + 1);
+*/
+
+
     // 3. Execute your CUSTOM implementation
     //printf("[DEBUG] Running custom gemm.\n");
     //bli_printm("Matrix A (Input):", &a, "% 6.1f", "");
     //bli_printm("Matrix B (Input):", &b, "% 6.1f", "");
     //bli_printm("Matrix C Reference: ", &c_generic, "%8.1f","");
     //printf(" alpha %f and beta %f...\n", (float)  alpha_val, (float) beta_val);
-    //bli_obj_set_comp_prec( BLIS_HALF_PREC, &c_custom );
+    bli_obj_set_comp_prec( BLIS_HALF_PREC, &c_custom );
     bli_gemm(&alpha, &a, &b, &beta, &c_custom);
     //printf("[DEBUG] CUSTOM bli_gemm finished without crashing.\n");
     bli_getsc(&alpha, &alpha_val, &dummy);
@@ -120,9 +135,7 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
         for (dim_t j = 0; j < n; j++) {
             float sum = 0.0f;
             for (dim_t p = 0; p < k; p++) {
-                float val_a = (float) buf_a[i * rs_a + p * cs_a];
-                float val_b = (float) buf_b[p * rs_b + j * cs_b];
-                sum += (float) val_a * val_b;
+                sum += ((float) buf_a[i * rs_a + p * cs_a])  * ((float) buf_b[p * rs_b + j * cs_b]);
             }
             buf_gen[i * rs_gen + j * cs_gen] = sum * (float)alpha_val + buf_gen[i * rs_gen + j * cs_gen] * (float)beta_val; 
         }
@@ -134,8 +147,8 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
 
     for (dim_t i = 0; i < m; i++) {
         for (dim_t j = 0; j < n; j++) {
-            float val_cust = buf_cust[i * rs_cust + j * cs_cust];
-            float val_gen  = buf_gen[i * rs_gen + j * cs_gen];
+            float val_cust =  buf_cust[i * rs_cust + j * cs_cust];
+            float val_gen  =  buf_gen[i * rs_gen + j * cs_gen];
             float diff     = fabsf(val_cust - val_gen);
 
             if (diff > max_diff) {
@@ -161,12 +174,12 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
                 printf("\n");*/
                 printf("Reference row %ld:\n",i);
                 for (int index = 0; index < n; index++){
-                    printf("%8.1f ",buf_gen[i*rs_cust + index * cs_cust]);
+                    printf("%f ",(float) buf_gen[i*rs_cust + index * cs_cust]);
                 }
                 printf("\n");
                 printf("Custom row %ld:\n",i);
                 for (int index = 0; index < n; index++){
-                    printf("%8.1f ",buf_cust[i * rs_cust + index * cs_cust]);
+                    printf("%f ", (float) buf_cust[i * rs_cust + index * cs_cust]);
                 }
                 printf("\n");
                 // DUMP THE MATRICES
@@ -193,7 +206,8 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
     // Free resources
     bli_obj_free(&a); bli_obj_free(&b);
     bli_obj_free(&c_custom); bli_obj_free(&c_generic);
-    bli_obj_free(&alpha); bli_obj_free(&beta);
+    bli_obj_free(&alpha); 
+    bli_obj_free(&beta);
 
     return failed;
 }
@@ -349,12 +363,11 @@ int main() {
     bli_init();
 
 
-    int failures = run_test_suite(200);
+    int failures = run_test_suite(2048);
     //verify_custom_gemm(2048,2048,2048);
-    //verify_custom_gemm(66,65,65);
+    //verify_custom_gemm(8,8,8);
     //verify_custom_gemm(65,66,65);
     //verify_custom_gemm(65,65,66);
-
     
     //printf("[DEBUG] Starting parameter sweep...\n");
     //run_block_size_sweep();

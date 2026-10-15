@@ -195,8 +195,10 @@ void bli_obj_scalar_reset
 	void*       scalar_a = bli_obj_internal_scalar_buffer( a );
 	const void* one      = bli_obj_buffer_for_const( dt, &BLIS_ONE );
 
-	if      ( bli_is_float( dt )    ) *(( float*    )scalar_a) = *(( float*    )one);
+	if      ( bli_is_half( dt )     ) *(( _Float16* )scalar_a) = *(( _Float16* )one);
+	else if ( bli_is_float( dt )    ) *(( float*    )scalar_a) = *(( float*    )one);
 	else if ( bli_is_double( dt )   ) *(( double*   )scalar_a) = *(( double*   )one);
+	else if ( bli_is_hcomplex( dt ) ) *(( hcomplex* )scalar_a) = *(( hcomplex* )one);
 	else if ( bli_is_scomplex( dt ) ) *(( scomplex* )scalar_a) = *(( scomplex* )one);
 	else if ( bli_is_dcomplex( dt ) ) *(( dcomplex* )scalar_a) = *(( dcomplex* )one);
 
@@ -219,6 +221,10 @@ bool bli_obj_scalar_has_nonzero_imag
 	if      ( bli_is_real( dt ) )
 	{
 		r_val = FALSE;
+	}
+	else if ( bli_is_hcomplex( dt ) )
+	{
+		r_val = ( bli_cimag( *(( hcomplex* )scalar_a) ) != 0.0f16 );
 	}
 	else if ( bli_is_scomplex( dt ) )
 	{

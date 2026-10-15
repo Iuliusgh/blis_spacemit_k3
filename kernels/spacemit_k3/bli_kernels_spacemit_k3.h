@@ -32,5 +32,5 @@
 
 */
 
-PACKM_KER_PROT( float, s, packm_spacemit_k3_8x8 )
-GEMM_UKR_PROT( float, s, gemm_spacemit_k3_8x8 )
+PACKM_KER_PROT( _Float16, h, packm_spacemit_k3_8x8 )
+GEMM_UKR2_PROT( _Float16, float, h, s, gemm_spacemit_k3_8x8 )

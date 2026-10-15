@@ -123,8 +123,10 @@ void bli_obj_create_without_buffer
 	// for A and B are merged).
 	//if      ( bli_is_float( dt )    ) { bli_tset1s( s, *(( float*    )s) ); }
 	//else if ( bli_is_double( dt )   ) { bli_tset1s( d, *(( double*   )s) ); }
-	if      ( bli_is_float( dt )    ) { bli_tset1s( c, *(( scomplex* )s) ); }
+	if      ( bli_is_half( dt )     ) { bli_tset1s( y, *(( hcomplex* )s) ); }
+	else if ( bli_is_float( dt )    ) { bli_tset1s( c, *(( scomplex* )s) ); }
 	else if ( bli_is_double( dt )   ) { bli_tset1s( z, *(( dcomplex* )s) ); }
+	else if ( bli_is_hcomplex( dt ) ) { bli_tset1s( y, *(( hcomplex* )s) ); }
 	else if ( bli_is_scomplex( dt ) ) { bli_tset1s( c, *(( scomplex* )s) ); }
 	else if ( bli_is_dcomplex( dt ) ) { bli_tset1s( z, *(( dcomplex* )s) ); }
 }
@@ -508,8 +510,10 @@ void bli_adjust_strides
 	}
 }
 
-static siz_t dt_sizes[6] =
+static siz_t dt_sizes[8] =
 {
+	sizeof( _Float16 ),
+	sizeof( hcomplex ),
 	sizeof( float ),
 	sizeof( scomplex ),
 	sizeof( double ),
@@ -531,6 +535,8 @@ siz_t bli_dt_size
 
 static char* dt_names[ BLIS_NUM_FP_TYPES+1 ] =
 {
+	"half",
+	"hcomplex",
 	"float",
 	"scomplex",
 	"double",
