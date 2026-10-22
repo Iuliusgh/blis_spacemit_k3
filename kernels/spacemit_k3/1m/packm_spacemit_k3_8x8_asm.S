@@ -1134,35 +1134,35 @@ K_loop_1:
     vmv.v.i v8, 0               # reset
     vmv.v.i v16, 0              # reset
     vmv.v.i v24, 0              # reset
-    vsetvli t0, K, e16, m8      #VL = min(K,256)
+    vsetvli t0, K, e16, m8      #VL = min(K,5121)
     vlse16.v v0, (M_addr), t6   #load first row
     mul t1, t0, t6
     add M_addr, M_addr, t1
-    vse16.v v0, (M_pack)        #[0][0-255]
+    vse16.v v0, (M_pack)        #[0][0-511]
     sh1add M_pack, t0, M_pack   # advance M_pack address based on saved elements
     sub K, K, t0                #K counter -= VL
     beqz K, End
-    vsetvli t0, K, e16, m8      #VL = min(K,256)
+    vsetvli t0, K, e16, m8      #VL = min(K,512)
     vlse16.v v8, (M_addr), t6   #load next row chunk
     mul t1, t0, t6
     add M_addr, M_addr, t1
-    vse16.v v8, (M_pack)        #[0][256-511]
+    vse16.v v8, (M_pack)        #[0][512-1023]
     sh1add M_pack, t0, M_pack   # advance M_pack address based on saved elements
     sub K, K, t0                #K counter -= VL
     beqz K, End
-    vsetvli t0, K, e16, m8      #VL = min(K,256)
+    vsetvli t0, K, e16, m8      #VL = min(K,512)
     vlse16.v v16, (M_addr), t6  #load next row chunk
     mul t1, t0, t6
     add M_addr, M_addr, t1
-    vse16.v v16, (M_pack)       #[0][512-767]
+    vse16.v v16, (M_pack)       #[0][1024-1535]
     sh1add M_pack, t0, M_pack   # advance M_pack address based on saved elements
     sub K, K, t0                #K counter -= VL
     beqz K, End
-    vsetvli t0, K, e16, m8      #VL = min(K,256)
+    vsetvli t0, K, e16, m8      #VL = min(K,512)
     vlse16.v v24, (M_addr), t6  #load next row chunk
     mul t1, t0, t6
     add M_addr, M_addr, t1
-    vse16.v v24, (M_pack)       #[0][768-1024]
+    vse16.v v24, (M_pack)       #[0][1536-2047]
     sh1add M_pack, t0, M_pack   # advance M_pack address based on saved elements
     sub K, K, t0                #K counter -= VL
     bgtz K, K_loop_1            #loop back if K > 0

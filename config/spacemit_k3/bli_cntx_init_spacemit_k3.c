@@ -80,7 +80,7 @@ void bli_cntx_init_spacemit_k3( cntx_t* cntx )
 	bli_blksz_init_easy( &blkszs[ BLIS_NR ],        8,       8,      -1,     -1,     -1,      -1 );
 	bli_blksz_init_easy( &blkszs[ BLIS_KC ],      512,     512,      -1,     -1,     -1,      -1 );
 	bli_blksz_init_easy( &blkszs[ BLIS_MC ],     1024,    1024,      -1,     -1,     -1,      -1 );
-	bli_blksz_init_easy( &blkszs[ BLIS_NC ],     4096,    4096,      -1,     -1,     -1,      -1 );
+	bli_blksz_init_easy( &blkszs[ BLIS_NC ],     8192,    8192,      -1,     -1,     -1,      -1 );
 
 	// Update the context with the current architecture's register and cache
 	// blocksizes (and multiples) for native execution.

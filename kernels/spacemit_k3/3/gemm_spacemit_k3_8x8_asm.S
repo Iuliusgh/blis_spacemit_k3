@@ -153,7 +153,6 @@ K_loop:
 ####VMADOT BLOCK 10
     slli t0, M, 3                       # M * 8 elems from A
     vsetvli t0, t0, e16, m1  
-                 
     vle16.v v11, (A_addr)               # load source 1 from A
     sh1add A_addr, t0, A_addr           # move A pointer
     slli t0, N, 3                       # N * 8 elems from B
@@ -269,6 +268,9 @@ Store:
     vmv.v.i v28, 0                       # row 1-2
     vsetvli t0, N, e32, m1,              # t0 has the # of elements of the row to store
     slli t2, C_cs, 2                     # Row stride in bytes
+    fmv.w.x ft0, zero
+    feq.s t1, beta, ft0
+    bnez t1, Beta_zero
 ### Store C[0][0-N]
     vlse32.v v29, (C_addr), t2           # load previous content of C first row
     vfmul.vf v30, v30, alpha             # AB * alpha, applies to the whole vector
@@ -330,6 +332,53 @@ Store:
     vlse32.v v22, (C_addr), t2           # load previous content of C eighth row
     vfmacc.vf v31, beta, v22             # C = beta * previous C
     vsse32.v v31, (C_addr), t2           # store elements of eighth row
+    j End
 ###End of store
+Beta_zero:
+### Store C[0][0-N]
+    vfmul.vf v30, v30, alpha             # AB * alpha, applies to the whole vector
+    vsse32.v v30, (C_addr), t2           # store elements of first row
+    li t1, 1                             # processed row counter
+    beq M, t1, End                       # M == 1? done
+### Store C[1][0-N]
+    addi t1, t1, 1                       # row count ++
+    sh2add C_addr, C_rs, C_addr          # next row  = C start address + (row stride << 2)
+    vslidedown.vi v30, v30, 8            # slide second row to front
+    vsse32.v v30, (C_addr), t2           # store elements of second row
+    beq M, t1, End                       # M == 2? done
+### Store C[2][0-N]
+    addi t1, t1, 1                       # row count ++
+    sh2add C_addr, C_rs, C_addr          # next row  = C start address + (row stride << 2)
+    vslidedown.vi v30, v30, 16           # slide third row to front
+    vsse32.v v30, (C_addr), t2           # store elements of third row
+    beq M, t1, End                       # M == 3? done
+### Store C[3][0-N]
+    addi t1, t1, 1                       # row count ++
+    sh2add C_addr, C_rs, C_addr          # next row  = C start address + (row stride << 2)
+    vslidedown.vi v30, v30, 24           # slide fourth row to front
+    vsse32.v v30, (C_addr), t2           # store elements of fourth row
+    beq M, t1, End                       # M == 4? done
+### Store C[4][0-N]
+    addi t1, t1, 1                       # row count ++
+    sh2add C_addr, C_rs, C_addr          # next row  = previous row + (row stride << 2)
+    vfmul.vf v31, v31, alpha             # AB * alpha, applies to the whole vector
+    vsse32.v v31, (C_addr), t2           # store elements of fifth row
+    beq M, t1, End                       # M == 5? done
+### Store C[5][0-N]
+    addi t1, t1, 1                       # row count++
+    sh2add C_addr, C_rs, C_addr          # next row  = previous row + (row stride << 2)
+    vslidedown.vi v31, v31, 8            # slide sixth to front
+    vsse32.v v31, (C_addr), t2           # store elements of sixth row
+    beq M, t1, End                       # M == 6? done
+### Store C[6][0-N]
+    addi t1, t1, 1                       # row count++
+    sh2add C_addr, C_rs, C_addr          # next row  = previous row + (row stride << 2)
+    vslidedown.vi v31, v31, 16           # slide seventh to front
+    vsse32.v v31, (C_addr), t2           # store elements of seventh row
+    beq M, t1, End                       # M == 6? done
+### Store C[7][0-N]
+    sh2add C_addr, C_rs, C_addr          # next row  = previous row + (row stride << 2)
+    vslidedown.vi v31, v31, 24           # slide eighth to front
+    vsse32.v v31, (C_addr), t2           # store elements of eighth row
 End:
     ret

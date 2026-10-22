@@ -144,7 +144,7 @@ CFLAGS         += -I$(TEST_SRC_PATH) -g
 #
 
 # Define the operations we will test.
-TEST_OPS := gemm_vmadot #dotv axpyv axpbyv\
+TEST_OPS := gemm_vmadot_speed gemm_vmadot_correct #dotv axpyv axpbyv\
             #gemv ger hemv her her2 trmv trsv \
             #gemm gemm3m gemm_batch hemm herk her2k trmm trsm
 
@@ -176,11 +176,6 @@ mkl: check-env $(TEST_BINS_MKL)
 $(TEST_OBJ_PATH)/%.o: $(TEST_SRC_PATH)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# --- explicit rule for trace.o, must NOT have -finstrument-functions ---
-#trace.o: trace.c
-#	$(CC) $(filter-out -finstrument-functions,$(CFLAGS)) -c $< -o $@
-
-
 test_%_openblas.o: test_%.c
 	$(CC) $(CFLAGS) -DBLAS=\"openblas\" -c $< -o $@
 
@@ -207,8 +202,6 @@ test_%_mkl.x: test_%_mkl.o $(LIBBLIS_LINK)
 test_%_blis.x: test_%_blis.o $(LIBBLIS_LINK)
 	$(LINKER) $<                             $(LIBBLIS_LINK) $(LDFLAGS) -o $@
 
-#test_%_blis.x: test_%_blis.o trace.o $(LIBBLIS_LINK)
-#	$(LINKER) $< trace.o          $(LIBBLIS_LINK) $(LDFLAGS) -rdynamic -o $@
 
 # -- Environment check rules --
 

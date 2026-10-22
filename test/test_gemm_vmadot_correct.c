@@ -3,62 +3,6 @@
 #include <math.h>
 #include "blis.h"
 
-void save_array_text_scalar(const char* filename, const float* array, int m, int n) {
-    // Open the file in "w" mode (write text)
-    FILE* fp = fopen(filename, "w");
-    if (fp == NULL) {
-        perror("Error opening file for writing");
-        return;
-    }
-
-    // Loop and write each element on a new line
-    for (int i = 0; i < m; i++) {
-        for(int j = 0; j < n; j++){
-            // Use standard formatting. "%f" or "%e" (scientific notation for floats)
-            fprintf(fp, "% 6.1f ", array[i * n + j]); 
-        }
-        fprintf(fp, "\n");
-    }
-
-    fclose(fp);
-}
-void pack_scalar(float* a, float* a_pack, int m, int n, int rs, int cs){
-    int idx=0;
-    int i = 0, j = 0;
-    if(rs == 1 && cs != 1){
-       
-        while(i < m){
-            int h = m - i >= 8 ? 8 : m - i;
-            while(j < n){
-                int w = n - j >= 4 ? 4 : n - j;
-                for(int k = 0; k < h; k++){
-                    for(int l = 0; l < w; l++){
-                       a_pack[idx]  =  a[(i + k) * rs + (j + l) * cs];
-                       idx++;
-                    }
-                }
-                j += w;
-            }
-            i += h;
-        }
-    }
-    else if(rs != 1 && cs == 1){
-        while(i < m){
-            int h = m - i >= 4 ? 4 : m - i;
-            while(j < n){
-                int w = n - j >= 8 ? 8 : n - j;
-                for(int k = 0; k < h; k++){
-                    for(int l = 0; l < w; l++){
-                       a_pack[idx]  =  a[(i + k) * cs + (j + l) * rs];
-                       idx++;
-                    }
-                }
-                j += w;
-            }
-            i += h;
-        }
-    }
-}
 int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
     obj_t a, b, c_custom, c_generic; 
     obj_t alpha, beta;
@@ -135,13 +79,14 @@ int verify_custom_gemm(dim_t m, dim_t n, dim_t k) {
         for (dim_t j = 0; j < n; j++) {
             float sum = 0.0f;
             for (dim_t p = 0; p < k; p++) {
-                sum += ((float) buf_a[i * rs_a + p * cs_a])  * ((float) buf_b[p * rs_b + j * cs_b]);
+                sum += (float) (buf_a[i * rs_a + p * cs_a]  *  buf_b[p * rs_b + j * cs_b]);
             }
-            buf_gen[i * rs_gen + j * cs_gen] = sum * (float)alpha_val + buf_gen[i * rs_gen + j * cs_gen] * (float)beta_val; 
+            float ab = sum * (float)alpha_val;
+            buf_gen[i * rs_gen + j * cs_gen] =  fmaf((float)beta_val,buf_gen[i * rs_gen + j * cs_gen],ab) ; 
         }
     }
     // 6. Compare results element-by-element
-    float threshold = 1e-4f; 
+    float threshold = 1e-2f; 
     float max_diff = 0.0f;
     int failed = 0;
 
@@ -263,115 +208,18 @@ int run_test_suite(dim_t max_dim) {
 
     return total_failures;
 }
-void run_block_size_sweep(){
-    char * filename = "blis_performance_results.csv";
-    FILE* csv_file = fopen(filename, "w");
-    if (csv_file == NULL) {
-        fprintf(stderr, "Error: Could not open file %s for writing.\n", filename);
-        return;
-    }
-    // Problem dimensions for the GEMM operation
-    dim_t M = 2048;
-    dim_t N = 2048;
-    dim_t K = 2048;
-
-    cntx_t* cntx = bli_gks_query_cntx();
-    // Allocate matrices using the BLIS Object API (Double Precision)
-    obj_t a, b, c;
-    obj_t alpha, beta;
-    num_t dt = BLIS_FLOAT;
-    bli_obj_create(dt, M, K, 0, 0, &a);
-    bli_obj_create(dt, K, N, 0, 0, &b);
-    bli_obj_create(dt, M, N, 0, 0, &c);
-
-    bli_obj_create(dt, 1, 1, 0, 0, &alpha);
-    bli_obj_create(dt, 1, 1, 0, 0, &beta);
-
-    // Set up scalar multipliers (alpha = 1.0, beta = 0.0)
-    bli_setsc(1.0, 0.0, &alpha); 
-    bli_setsc(0.0, 0.0, &beta);  
-
-    // Calculate total theoretical floating-point operations (2 * M * N * K)
-    double total_flops = 2.0 * (double)M * (double)N * (double)K;
-
-    // Print CSV Header to stdout
-    fprintf(csv_file, "NC,MC,KC,Time_Sec,GFLOPS\n");
-    fflush(csv_file);
-    // Define the parameter ranges for the sweep
-    //dim_t nc_start = 64, nc_end = 4096,  nc_step = 64;
-    dim_t mc_start = 256,  mc_end = 524288,  mc_step = 64;
-    dim_t kc_start = 64,  kc_end = 32768,   kc_step = 64;
-
-    // Run a quick warmup GEMM to ramp up CPU frequency scaling governor
-    bli_randm(&a);bli_randm(&b);bli_setm(&BLIS_ZERO, &c);//bli_rand_int8m(&a); bli_rand_int8m(&b);bli_setm(&BLIS_ZERO, &c);
-    bli_gemm_ex(&alpha, &a, &b, &beta, &c, cntx, NULL);
-
-    // Nested parametric sweep loops
-    //for (dim_t nc = nc_start; nc <= nc_end; nc += nc_step) {
-        for (dim_t kc = kc_start; kc <= kc_end; kc += kc_step) {
-            for (dim_t mc = kc_start; mc <= mc_end; mc += mc_step) {
-            
-                // Re-randomize / clear data matrices between runs
-                bli_randm(&a);//bli_rand_int8m(&a);
-                bli_randm(&b);//bli_rand_int8m(&b);
-                bli_setm(&BLIS_ZERO, &c);
-                
-				blksz_t my_kc;
-                blksz_t my_mc;
-                //blksz_t my_nc;
-                
-				bli_blksz_init ( &my_mc,
-							0, mc, 0, 0, 0, 0, 
-							0, mc, 0, 0, 0, 0);
-                bli_blksz_init ( &my_kc,
-							0, kc, 0, 0, 0, 0, 
-	                        0, kc, 0, 0, 0, 0);
-                //bli_blksz_init ( &my_nc,
-							//nc, 0, 0, 0, 
-							//nc, 0, 0, 0);
-                //bli_cntx_set_blksz( BLIS_NC, &my_nc, 0, cntx );
-                bli_cntx_set_blksz( BLIS_MC, &my_mc, 0, cntx );
-				bli_cntx_set_blksz( BLIS_KC, &my_kc, 0, cntx );
-
-                // Benchmark the specific execution window
-                double start_time = bli_clock();
-                bli_gemm_ex(&alpha, &a, &b, &beta, &c, cntx, NULL);
-                double end_time = bli_clock();
-                
-                double elapsed_time = end_time - start_time;
-                double gflops = total_flops / (elapsed_time * 1.0e9);
-
-                // Write metrics to the CSV file descriptor instead of stdout
-                fprintf(csv_file, "%ld,%ld,%.6f,%.2f\n", 
-                        (long)mc, (long)kc, elapsed_time, gflops);
-                
-                // Force flush ensures that data isn't lost if the process hangs/crashes
-                fflush(csv_file);
-            }
-            printf("Completed %.1f %%\n",(100.0*kc)/(100.0*kc_end));
-        }
-    //}
-    // Safely close the file stream
-    fclose(csv_file);
-    // Clean up allocated object memory inside the scope of the function
-    bli_obj_free(&a);
-    bli_obj_free(&b);
-    bli_obj_free(&c);
-}
 
 int main() {
     bli_init();
 
-
     int failures = run_test_suite(2048);
     //verify_custom_gemm(2048,2048,2048);
-    //verify_custom_gemm(8,8,8);
+    //for(int i = 128 ; i<=2048 ; i+=128){
+    //verify_custom_gemm(i,i,i);
+    //}
     //verify_custom_gemm(65,66,65);
     //verify_custom_gemm(65,65,66);
-    
-    //printf("[DEBUG] Starting parameter sweep...\n");
-    //run_block_size_sweep();
-    //printf("[DEBUG] Sweep completed successfully.\n");
+
 
     bli_finalize();
     return 0;

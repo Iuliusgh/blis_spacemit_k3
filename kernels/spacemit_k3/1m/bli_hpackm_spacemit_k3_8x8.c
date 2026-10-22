@@ -19,8 +19,9 @@ void bli_hpackm_spacemit_k3_8x8
      )
 {     
       //printf("Using custom packing...\n");
-
+      double start_time = bli_clock();
       packm_spacemit_k3_8x8_asm(cdim0, k0, inca0, lda0, a , p);
+      double end_time = bli_clock();
       /*
       if(lda0 != 1 && inca0 == 1){
             printf("Matrix b:\n");
