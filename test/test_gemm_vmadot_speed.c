@@ -31,10 +31,10 @@ int main() {
     fprintf(csv_file, "M,NC,MC,KC,Time_Sec,GFLOPS\n");
     fflush(csv_file);
     // Define the parameter ranges for the sweep
-    dim_t m_start = 128, m_end = 8192,  m_step = 128;
-    dim_t kc_start = 32,  kc_end = 2048,   kc_step = 32;
-    dim_t mc_start = 32,  mc_end = 768,  mc_step = 32;
-    dim_t nc_start = 8192,  nc_end = 8192,  nc_step = 1024, nc=8192;
+    dim_t m_start = 128, m_end = 4096,  m_step = 128;
+    dim_t kc_start = 128,  kc_end = 2048,   kc_step = 128;
+    dim_t mc_start = 128,  mc_end = 768,  mc_step = 64;
+    dim_t nc_start = 8192,  nc_end = 8192,  nc_step = 1024, nc=1024;
 
     //printf("Done init. Proceed with loop...\n");
     // Nested parametric sweep loops
@@ -74,10 +74,10 @@ int main() {
                 double gflops = total_flops / (elapsed_time * 1.0e9);
 
                 // Write metrics to the CSV file descriptor instead of stdout
-                fprintf(csv_file, "%ld,%ld,%ld,%ld,%.6f,%.2f\n", 
+                //fprintf(csv_file, "%ld,%ld,%ld,%ld,%.6f,%.2f\n", 
+                        //m,(long)nc,(long)mc, (long)kc, elapsed_time, gflops);
+                fprintf(stdout, "%ld,%ld,%ld,%ld,%.6f,%.2f\n", 
                         m,(long)nc,(long)mc, (long)kc, elapsed_time, gflops);
-                //fprintf(stdout, "%ld,%ld,%ld,%ld,%.6f,%.2f\n", 
-                //        m,(long)nc,(long)mc, (long)kc, elapsed_time, gflops);
 
                 fflush(stdout);
                 

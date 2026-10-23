@@ -34,7 +34,285 @@
 
 */
 
+#define _GNU_SOURCE
+
 #include "blis.h"
+
+#include <dlfcn.h>
+#include <sched.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define SPACEMIT_TCM_BLOCK_SIZE 393216
+#define SPACEMIT_TCM_NUM_BLOCKS 8
+
+typedef const char *(*spine_version_ft)(void);
+typedef int         (*spine_available_ft)(void);
+typedef void       *(*spine_mem_get_ft)(int);
+typedef int         (*spine_mem_free_ft)(int);
+
+typedef struct
+{
+    void*               handle;
+    spine_version_ft    version;
+    spine_available_ft  available;
+    spine_mem_get_ft    mem_get;
+    spine_mem_free_ft   mem_free;
+
+    int initialized;
+    int usable;
+
+    /*
+       Pointer currently acquired for each block by this process.
+       NULL means that this BLIS instance does not own it.
+    */
+    void* block_ptr[SPACEMIT_TCM_NUM_BLOCKS];
+
+} bli_spacemit_tcm_state_t;
+
+
+static bli_spacemit_tcm_state_t spacemit_tcm =
+{
+    .handle      = NULL,
+    .initialized = 0,
+    .usable      = 0,
+    .block_ptr   = { NULL }
+};
+
+static void bli_spacemit_tcm_init( void )
+{
+    if ( spacemit_tcm.initialized )
+        return;
+
+    spacemit_tcm.initialized = 1;
+
+    spacemit_tcm.handle =
+        dlopen( "libspine_tcm.so", RTLD_NOW | RTLD_LOCAL );
+
+    if ( spacemit_tcm.handle == NULL )
+        return;
+
+    spacemit_tcm.version =
+        (spine_version_ft)
+        dlsym( spacemit_tcm.handle,
+               "spine_tcm_runtime_version" );
+
+    spacemit_tcm.available =
+        (spine_available_ft)
+        dlsym( spacemit_tcm.handle,
+               "spine_tcm_runtime_is_available" );
+
+    spacemit_tcm.mem_get =
+        (spine_mem_get_ft)
+        dlsym( spacemit_tcm.handle,
+               "spine_tcm_runtime_mem_get" );
+
+    spacemit_tcm.mem_free =
+        (spine_mem_free_ft)
+        dlsym( spacemit_tcm.handle,
+               "spine_tcm_runtime_mem_free" );
+
+
+    if ( spacemit_tcm.version   == NULL ||
+         spacemit_tcm.available == NULL ||
+         spacemit_tcm.mem_get   == NULL ||
+         spacemit_tcm.mem_free  == NULL )
+    {
+        return;
+    }
+
+    if ( !spacemit_tcm.available() )
+        return;
+
+    spacemit_tcm.usable = 1;
+
+    if ( getenv( "BLIS_SPACEMIT_TCM_VERBOSE" ) )
+    {
+        fprintf( stderr,
+                 "[BLIS-TCM] spine_tcm %s available\n",
+                 spacemit_tcm.version() );
+    }
+}
+
+static int bli_spacemit_tcm_type_enabled( packbuf_t buf_type )
+{
+    const char* mode = getenv( "BLIS_SPACEMIT_TCM" );
+
+    if ( mode == NULL )
+        return 0;
+
+    if ( strcmp( mode, "none" ) == 0 )
+        return 0;
+
+    if ( strcmp( mode, "ab" ) == 0 )
+    {
+        return
+            buf_type == BLIS_BUFFER_FOR_A_BLOCK ||
+            buf_type == BLIS_BUFFER_FOR_B_PANEL;
+    }
+
+    if ( strcmp( mode, "a" ) == 0 )
+        return buf_type == BLIS_BUFFER_FOR_A_BLOCK;
+
+    if ( strcmp( mode, "b" ) == 0 )
+        return buf_type == BLIS_BUFFER_FOR_B_PANEL;
+
+    return 0;
+}
+
+static int bli_spacemit_tcm_block_for
+     (
+       int       cpu,
+       packbuf_t buf_type
+     )
+{
+    int pair;
+
+    if ( cpu < 8 || cpu > 15 )
+        return -1;
+
+    pair = ( cpu - 8 ) / 2;
+
+    if ( buf_type == BLIS_BUFFER_FOR_A_BLOCK )
+        return 2 * pair;
+
+    if ( buf_type == BLIS_BUFFER_FOR_B_PANEL )
+        return 2 * pair + 1;
+
+    return -1;
+}
+
+static int bli_spacemit_tcm_try_acquire
+     (
+       siz_t     req_size,
+       packbuf_t buf_type,
+       void**    buffer
+     )
+{
+    *buffer = NULL;
+
+    if ( !bli_spacemit_tcm_type_enabled( buf_type ) )
+        return 0;
+
+    bli_spacemit_tcm_init();
+
+    if ( !spacemit_tcm.usable )
+        return 0;
+
+    /*
+       Por ahora no repartimos una reserva entre dos bloques.
+    */
+    if ( req_size > SPACEMIT_TCM_BLOCK_SIZE )
+    {
+        if ( getenv( "BLIS_SPACEMIT_TCM_VERBOSE" ) )
+        {
+            fprintf
+            (
+              stderr,
+              "[BLIS-TCM] request too large: %zu > %d; fallback\n",
+              (size_t)req_size,
+              SPACEMIT_TCM_BLOCK_SIZE
+            );
+        }
+
+        return 0;
+    }
+
+    int cpu = sched_getcpu();
+
+    int block =
+        bli_spacemit_tcm_block_for( cpu, buf_type );
+
+    if ( block < 0 )
+        return 0;
+
+    /*
+       Si nosotros ya tenemos adquirido ese bloque,
+       no intentamos adquirirlo por segunda vez.
+    */
+    if ( spacemit_tcm.block_ptr[block] != NULL )
+        return 0;
+
+    void* p = spacemit_tcm.mem_get( block );
+
+    if ( p == NULL )
+    {
+        if ( getenv( "BLIS_SPACEMIT_TCM_VERBOSE" ) )
+        {
+            fprintf
+            (
+              stderr,
+              "[BLIS-TCM] cannot acquire block %d; fallback\n",
+              block
+            );
+        }
+
+        return 0;
+    }
+
+    spacemit_tcm.block_ptr[block] = p;
+
+    *buffer = p;
+
+    if ( getenv( "BLIS_SPACEMIT_TCM_VERBOSE" ) )
+    {
+        const char* which =
+            buf_type == BLIS_BUFFER_FOR_A_BLOCK ? "A" : "B";
+
+        fprintf
+        (
+          stderr,
+          "[BLIS-TCM] pack%s size=%zu CPU=%d block=%d ptr=%p\n",
+          which,
+          (size_t)req_size,
+          cpu,
+          block,
+          p
+        );
+    }
+
+    return 1;
+}
+
+static int bli_spacemit_tcm_try_release( void* buffer )
+{
+    if ( buffer == NULL )
+        return 0;
+
+    if ( !spacemit_tcm.usable )
+        return 0;
+
+    for ( int block = 0;
+          block < SPACEMIT_TCM_NUM_BLOCKS;
+          ++block )
+    {
+        if ( spacemit_tcm.block_ptr[block] == buffer )
+        {
+            int rc =
+                spacemit_tcm.mem_free( block );
+
+            if ( getenv( "BLIS_SPACEMIT_TCM_VERBOSE" ) )
+            {
+                fprintf
+                (
+                  stderr,
+                  "[BLIS-TCM] release block=%d ptr=%p rc=%d\n",
+                  block,
+                  buffer,
+                  rc
+                );
+            }
+
+            spacemit_tcm.block_ptr[block] = NULL;
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 // Statically initialize the mutex within the packing block allocator object.
 static pba_t global_pba = { .mutex = BLIS_PTHREAD_MUTEX_INITIALIZER };
@@ -109,6 +387,56 @@ void bli_pba_acquire_m
 	        ( long )req_size );
 	#endif
 #endif
+
+	    /*
+       Try SpaceMiT TCM before falling back to the
+       conventional BLIS packing pools.
+    */
+    if ( buf_type == BLIS_BUFFER_FOR_A_BLOCK ||
+         buf_type == BLIS_BUFFER_FOR_B_PANEL )
+    {
+        void* tcm_buffer = NULL;
+
+        bli_pba_lock( pba );
+
+        int acquired =
+            bli_spacemit_tcm_try_acquire
+            (
+              req_size,
+              buf_type,
+              &tcm_buffer
+            );
+
+        bli_pba_unlock( pba );
+
+        if ( acquired )
+        {
+            bli_mem_set_buffer( tcm_buffer, mem );
+            bli_mem_set_buf_type( buf_type, mem );
+
+            /*
+               NULL is fine because TCM is handled specially
+               in bli_pba_release() below.
+            */
+            bli_mem_set_pool( NULL, mem );
+
+            /*
+               IMPORTANT:
+               advertise the full 384 KiB, not req_size.
+
+               Thus BLIS may reuse this mem_t for later packing
+               requests <= 384 KiB without releasing/reacquiring
+               the TCM block.
+            */
+            bli_mem_set_size
+            (
+              SPACEMIT_TCM_BLOCK_SIZE,
+              mem
+            );
+
+            return;
+        }
+    }
 
 	if ( buf_type == BLIS_BUFFER_FOR_GEN_USE )
 	{
@@ -193,6 +521,21 @@ void bli_pba_release
        mem_t* mem
      )
 {
+    void* buffer = bli_mem_buffer( mem );
+
+    bli_pba_lock( pba );
+
+    int was_tcm =
+        bli_spacemit_tcm_try_release( buffer );
+
+    bli_pba_unlock( pba );
+
+    if ( was_tcm )
+    {
+        bli_mem_clear( mem );
+        return;
+    }
+
 	// Extract the buffer type so we know what kind of memory was allocated.
 	packbuf_t buf_type = bli_mem_buf_type( mem );
 
